@@ -1,0 +1,5 @@
+{
+  "name": "tc-launcher",
+  "version": "0.0.1",
+  "main": "electron.js"
+}
