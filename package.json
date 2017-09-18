@@ -9,9 +9,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build-electron": "ng build --base-href . && cp src/electron/* dist/",
-    "electron": "npm run build-electron && electron dist/",
-    "package-electron": "ng build --aot --prod --base-href . && cp src/electron/* dist/ && electron-packager dist trinitycore-launcher --asar --out=bin"
+    "build-electron": "tsc -p src/electron --outDir dist/ && cp src/electron/package.json dist/",
+    "electron": "ng build --base-href . && npm run build-electron && electron --inspect dist/",
+    "package-electron": "ng build --aot --prod --base-href . && npm run build-electron && electron-packager dist trinitycore-launcher --asar --out=bin"
   },
   "private": true,
   "dependencies": {
@@ -27,6 +27,7 @@
     "core-js": "^2.4.1",
     "ngx-electron": "^1.0.3",
     "rxjs": "^5.4.2",
+    "winreg": "^1.2.4",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {
