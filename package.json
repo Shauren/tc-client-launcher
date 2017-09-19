@@ -5,13 +5,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build  --base-href .",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build-electron": "tsc -p src/electron --outDir dist/ && cp src/electron/package.json dist/",
-    "electron": "ng build --base-href . && npm run build-electron && electron --inspect dist/",
-    "package-electron": "ng build --aot --prod --base-href . && npm run build-electron && electron-packager dist trinitycore-launcher --asar --out=bin"
+    "electron": "npm run build && npm run build-electron && electron dist/",
+    "package-electron": "ng build --aot --prod --base-href . && npm run build-electron && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite"
   },
   "private": true,
   "dependencies": {
@@ -28,6 +28,7 @@
     "ffi": "^2.2.0",
     "ngx-electron": "^1.0.3",
     "ref": "^1.3.5",
+    "ref-array": "^1.2.0",
     "ref-struct": "^1.1.0",
     "rxjs": "^5.4.2",
     "winreg": "^1.2.4",

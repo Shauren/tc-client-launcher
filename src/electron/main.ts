@@ -13,6 +13,7 @@ function cleanup() {
 
 function createWindow() {
     // Create the browser window.
+    //applicationWindow = new BrowserWindow({ width: 432, height: 364 });
     applicationWindow = new BrowserWindow({ width: 800, height: 600 });
 
     // and load the index.html of the app.

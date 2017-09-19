@@ -1,13 +1,16 @@
 import * as ffi from 'ffi';
 import * as ref from 'ref';
 import * as struct from 'ref-struct';
+import * as array from 'ref-array'
+
+export const ByteArray = array(ref.types.byte);
 
 export const DATA_BLOB = struct({
     cbData: ref.types.uint32,
-    pbData: 'string'
+    pbData: ByteArray
 });
 const PDATA_BLOB = new ref.refType(DATA_BLOB);
 
-export const crypt32 = ffi.Library('crypt32.dll', {
-    'CryptProtectData': ['bool', [PDATA_BLOB, 'string', PDATA_BLOB, 'pointer', 'pointer', ref.types.uint32, PDATA_BLOB]]
+export const crypt32 = ffi.Library('crypt32', {
+    'CryptProtectData': ['bool', [PDATA_BLOB, ref.refType(ref.types.void), PDATA_BLOB, ref.refType(ref.types.void), ref.refType(ref.types.void), ref.types.uint32, PDATA_BLOB]]
 });
