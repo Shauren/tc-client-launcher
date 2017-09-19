@@ -1,7 +1,7 @@
 import * as ffi from 'ffi';
 import * as ref from 'ref';
+import * as array from 'ref-array';
 import * as struct from 'ref-struct';
-import * as array from 'ref-array'
 
 export const ByteArray = array(ref.types.byte);
 

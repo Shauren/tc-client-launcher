@@ -1,16 +1,15 @@
+import { spawn } from 'child_process';
 import { ipcMain } from 'electron';
 import * as Registry from 'winreg';
-import { spawn } from 'child_process';
+
+import { ByteArray, crypt32, DATA_BLOB } from './crypt32';
 import { LaunchArgs } from './launch-args';
-import { crypt32, DATA_BLOB, ByteArray } from './crypt32';
-import * as ref from 'ref';
-import * as array from 'ref-array'
 
 export class Launcher {
 
     listen(): void {
         ipcMain.on('launcher', (event, args: LaunchArgs) => {
-            let key = new Registry({ hive: Registry.HKCU, key: '\\Software\\TrinityCore Developers\\Battle.net\\Launch Options\\WoW', arch: args.Use64Bit ? 'x64' : 'x86' }).create(err => {
+            const key = new Registry({ hive: Registry.HKCU, key: '\\Software\\TrinityCore Developers\\Battle.net\\Launch Options\\WoW', arch: args.Use64Bit ? 'x64' : 'x86' }).create(err => {
                 if (err) {
                     throw err;
                 }
@@ -22,14 +21,14 @@ export class Launcher {
                         if (gaErr) {
                             throw gaErr;
                         }
-                        let pDataIn = new DATA_BLOB();
+                        const pDataIn = new DATA_BLOB();
                         pDataIn.cbData = args.LoginTicket.length;
                         pDataIn.pbData = new ByteArray(args.LoginTicket.length);
                         for (let i = 0; i < args.LoginTicket.length; ++i) {
                             pDataIn.pbData[i] = args.LoginTicket.charCodeAt(i);
                         }
 
-                        let pOptionalEntropy = new DATA_BLOB();
+                        const pOptionalEntropy = new DATA_BLOB();
                         pOptionalEntropy.cbData = 16;
                         pOptionalEntropy.pbData = new ByteArray(16);
                         pOptionalEntropy.pbData[0] = 0xC8;
@@ -49,7 +48,7 @@ export class Launcher {
                         pOptionalEntropy.pbData[14] = 0x9C;
                         pOptionalEntropy.pbData[15] = 0x43;
 
-                        let outputBlob = new DATA_BLOB();
+                        const outputBlob = new DATA_BLOB();
                         if (!crypt32.CryptProtectData(pDataIn.ref(), null, pOptionalEntropy.ref(), null, null, 1, outputBlob.ref())) {
                             throw new Error('crypt32!CryptProtectData failed!');
                         }
