@@ -1,19 +1,20 @@
-import { app, BrowserWindow } from 'electron';
-import { Launcher } from './launcher';
+import { app, BrowserWindow, ipcMain } from 'electron';
+
+import { LaunchArgs } from './launch-args';
+
+const nativeLauncher = require('./tc_launcher.node');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let applicationWindow: Electron.BrowserWindow;
-let launcher: Launcher;
 
 function cleanup() {
     applicationWindow = undefined;
-    launcher = undefined;
 }
 
 function createWindow() {
     // Create the browser window.
-    //applicationWindow = new BrowserWindow({ width: 432, height: 364 });
+    // applicationWindow = new BrowserWindow({ width: 432, height: 364 });
     applicationWindow = new BrowserWindow({ width: 800, height: 600 });
 
     // and load the index.html of the app.
@@ -27,8 +28,9 @@ function createWindow() {
         cleanup();
     });
 
-    launcher = new Launcher();
-    launcher.listen();
+    ipcMain.on('launcher', (event, args: LaunchArgs) => {
+        nativeLauncher.launchGame(args.WowInstallDir, args.Use64Bit, args.Portal, args.LoginTicket, args.GameAccount);
+    });
 }
 
 // This method will be called when Electron has finished
