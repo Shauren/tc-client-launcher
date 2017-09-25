@@ -6,8 +6,9 @@
     "build": "ng build --aot --base-href .",
     "build-electron": "tsc -p src/electron --outDir dist/ && cp src/electron/package.json dist/",
     "build-native": "electron-rebuild -f && cp build/Release/tc_launcher.node dist/",
-    "electron": "npm run build && npm run build-electron && electron dist/",
-    "package-electron": "ng build --aot --prod --base-href . && npm run build-native && npm run build-electron && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite"
+    "build-all-dev": "npm run build && npm run build-electron && npm run build-native",
+    "electron": "electron --remote-debugging-port=9222 dist/main.js",
+    "build-package": "ng build --aot --prod --base-href . && npm run build-native && npm run build-electron && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite"
   },
   "gypfile": true,
   "private": true,
@@ -22,6 +23,7 @@
     "@angular/platform-browser-dynamic": "^4.2.4",
     "@angular/router": "^4.2.4",
     "core-js": "^2.4.1",
+    "electron-settings": "^3.1.1",
     "ngx-electron": "^1.0.3",
     "rxjs": "^5.4.2",
     "zone.js": "^0.8.14"
@@ -30,6 +32,7 @@
     "@angular/cli": "1.4.2",
     "@angular/compiler-cli": "^4.2.4",
     "@angular/language-service": "^4.2.4",
+    "@types/electron-settings": "^3.0.0",
     "@types/node": "~6.0.60",
     "codelyzer": "~3.1.1",
     "electron": "^1.7.6",

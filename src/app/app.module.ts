@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgxElectronModule } from 'ngx-electron';
 
+import { ConfigurationService } from './configuration.service';
 import { MainComponent } from './main/main.component';
 
 @NgModule({
@@ -12,7 +13,9 @@ import { MainComponent } from './main/main.component';
         BrowserModule,
         NgxElectronModule
     ],
-    providers: [],
+    providers: [
+        ConfigurationService,
+    ],
     bootstrap: [MainComponent]
 })
 export class AppModule {

@@ -1,21 +1,44 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import * as electronSettings from 'electron-settings';
 
+import { Configuration, getDefaultConfiguration } from './configuration';
 import { LaunchArgs } from './launch-args';
 
-const nativeLauncher = require('./tc_launcher.node');
+const nativeLauncher: Launcher = require('./tc_launcher.node');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let applicationWindow: Electron.BrowserWindow;
+let configuration: Configuration;
 
 function cleanup() {
     applicationWindow = undefined;
+    configuration = undefined;
+}
+
+function loadConfig() {
+    configuration = Object.assign(getDefaultConfiguration(), electronSettings.getAll());
+    electronSettings.setAll(<any>configuration);
+
+    ipcMain.on('init-configuration', (event) => { event.returnValue = configuration; });
+    ipcMain.on('configuration', (event, args) => {
+        if (args != undefined) {
+            for (let i = 0; i < args.length; i += 2) {
+                if (args[i + 1] == undefined) {
+                    delete configuration[args[i]];
+                } else {
+                    configuration[args[i]] = args[i + 1];
+                }
+            }
+            electronSettings.setAll(<any>configuration);
+        }
+        event.sender.send('configuration-response', configuration);
+    });
 }
 
 function createWindow() {
     // Create the browser window.
-    // applicationWindow = new BrowserWindow({ width: 432, height: 364 });
-    applicationWindow = new BrowserWindow({ width: 800, height: 600 });
+    applicationWindow = new BrowserWindow({ width: 640, height: 480 });
 
     // and load the index.html of the app.
     applicationWindow.loadURL(`file://${__dirname}/index.html`);
@@ -36,7 +59,21 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+
+    loadConfig();
+
+    createWindow();
+
+    ipcMain.on('launcher', (event, args: LaunchArgs) => {
+        nativeLauncher.launchGame(
+            configuration.WowInstallDir,
+            configuration.Use64Bit,
+            args.Portal,
+            args.LoginTicket,
+            args.GameAccount);
+    });
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
