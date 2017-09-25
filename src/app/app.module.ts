@@ -2,18 +2,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgxElectronModule } from 'ngx-electron';
 
-import { AppComponent } from './app.component';
+import { MainComponent } from './main/main.component';
 
 @NgModule({
     declarations: [
-        AppComponent
+        MainComponent
     ],
     imports: [
         BrowserModule,
         NgxElectronModule
     ],
     providers: [],
-    bootstrap: [AppComponent]
+    bootstrap: [MainComponent]
 })
 export class AppModule {
 }
