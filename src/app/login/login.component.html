@@ -1,0 +1,23 @@
+<div class="form-center">
+    <div [ngStyle]="{'display': formInputs != undefined ? 'inline-block' : 'none'}" class="form-small">
+        <form #loginForm="ngForm" (ngSubmit)="login()">
+            <div *ngFor="let input of formInputs" class="form-row">
+                <div class="form-field">
+                    <label [attr.for]="input.input_id">{{ input.label }}</label>
+                    <input [attr.id]="input.input_id" [attr.type]="input.type" [attr.maxlength]="input.max_length" [name]="input.input_id" required
+                        ngModel>
+                </div>
+            </div>
+            <div *ngIf="loginError != undefined" class="form-row form-field">
+                <div class="form-errors">
+                    {{ loginError }}
+                </div>
+            </div>
+            <div *ngIf="submit != undefined" class="form-row">
+                <div class="form-field">
+                    <input type="submit" [attr.value]="submit.label" [disabled]=!loginForm.valid>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
