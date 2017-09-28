@@ -1,3 +1,5 @@
+import 'rxjs/add/observable/empty';
+
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
