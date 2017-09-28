@@ -38,7 +38,11 @@ function loadConfig() {
 
 function createWindow() {
     // Create the browser window.
-    applicationWindow = new BrowserWindow({ width: 640, height: 480 });
+    applicationWindow = new BrowserWindow({
+        width: 640,
+        height: 480,
+        show: false
+    });
 
     // and load the index.html of the app.
     applicationWindow.loadURL(`file://${__dirname}/index.html`);
@@ -51,8 +55,8 @@ function createWindow() {
         cleanup();
     });
 
-    ipcMain.on('launcher', (event, args: LaunchArgs) => {
-        nativeLauncher.launchGame(args.WowInstallDir, args.Use64Bit, args.Portal, args.LoginTicket, args.GameAccount);
+    applicationWindow.on('ready-to-show', () => {
+        applicationWindow.show();
     });
 }
 

@@ -8,7 +8,8 @@
     "build-native": "electron-rebuild -f && cp build/Release/tc_launcher.node dist/",
     "build-all-dev": "npm run build && npm run build-electron && npm run build-native",
     "electron": "electron --remote-debugging-port=9222 dist/main.js",
-    "build-package": "ng build --aot --prod --base-href . && npm run build-native && npm run build-electron && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite"
+    "install-electron-deps": "pushd dist && npm install && popd",
+    "build-package": "ng build --aot --prod --base-href . && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite"
   },
   "gypfile": true,
   "private": true,
