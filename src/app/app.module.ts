@@ -7,6 +7,7 @@ import { NgxElectronModule } from 'ngx-electron';
 
 import { BnetserverService } from './bnetserver.service';
 import { ConfigurationService } from './configuration.service';
+import { LoginTicketService } from './login-ticket.service';
 import { LoginFormResolver } from './login/login-form.resolver';
 import { LoginComponent } from './login/login.component';
 import { LoginService } from './login/login.service';
@@ -30,6 +31,7 @@ import { routes } from './routes';
         BnetserverService,
         LoginService,
         LoginFormResolver,
+        LoginTicketService,
     ],
     bootstrap: [MainComponent]
 })

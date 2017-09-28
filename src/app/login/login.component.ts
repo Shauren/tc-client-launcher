@@ -3,6 +3,7 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 
+import { LoginTicketService } from '../login-ticket.service';
 import { FormInput } from './form-inputs';
 import { FormInputValue, LoginForm } from './login-form';
 import { AuthenticationState } from './login-result';
@@ -23,6 +24,7 @@ export class LoginComponent implements OnInit {
 
     constructor(
         private loginService: LoginService,
+        private loginTicket: LoginTicketService,
         private electron: ElectronService,
         private route: ActivatedRoute,
         private router: Router) {
@@ -31,6 +33,8 @@ export class LoginComponent implements OnInit {
     ngOnInit(): void {
         this.formInputs = this.route.snapshot.data['form'].inputs.filter(input => input.type !== 'submit');
         this.submit = this.route.snapshot.data['form'].inputs.find(input => input.type === 'submit');
+        // navigating to this component means our stored credentials were not valid, clear them
+        this.loginTicket.clear();
     }
 
     login(): void {
@@ -48,10 +52,16 @@ export class LoginComponent implements OnInit {
         this.loginService.login(form).subscribe(loginResult => {
             if (loginResult.authentication_state === AuthenticationState.DONE) {
                 if (!!loginResult.login_ticket) {
-                } else if (!!loginResult.error_message) {
-                    this.loginError = loginResult.error_message;
+                    this.loginTicket.store(loginResult.login_ticket, this.rememberLogin);
                 } else {
-                    this.loginError = 'We couldn\'t log you in with what you just entered. Please try again.';
+                    if (!!loginResult.error_message) {
+                        this.loginError = loginResult.error_message;
+                    } else {
+                        this.loginError = 'We couldn\'t log you in with what you just entered. Please try again.';
+                    }
+                    this.formInputs
+                        .filter(input => input.type === 'password')
+                        .forEach(input => this.loginForm.controls[input.input_id].reset());
                 }
             }
         });
