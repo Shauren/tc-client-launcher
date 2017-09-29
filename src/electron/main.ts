@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import * as electronSettings from 'electron-settings';
 
 import { Configuration, getDefaultConfiguration } from './configuration';
@@ -60,6 +60,64 @@ function createWindow() {
     });
 }
 
+function createMenu() {
+    let template: Electron.MenuItemConstructorOptions[];
+
+    if (process.platform !== 'darwin') {
+        template = [
+            {
+                label: 'Window',
+                submenu: [
+                    { role: 'toggledevtools' },
+                    { type: 'separator' },
+                    { role: 'minimize' },
+                    { role: 'close' }
+                ]
+            }
+        ];
+    } else {
+        template = [
+            {
+                label: app.getName(),
+                submenu: [
+                    { role: 'hide' },
+                    { role: 'hideothers' },
+                    { role: 'unhide' },
+                    { type: 'separator' },
+                    { role: 'quit' }
+                ]
+            },
+            // mac does not support copy/paste if these items aren't in menu... how retarded is that?
+            {
+                label: 'Edit',
+                submenu: [
+                    { role: 'undo' },
+                    { role: 'redo' },
+                    { type: 'separator' },
+                    { role: 'cut' },
+                    { role: 'copy' },
+                    { role: 'paste' },
+                    { role: 'pasteandmatchstyle' },
+                    { role: 'delete' },
+                    { role: 'selectall' }
+                ]
+            },
+            {
+                label: 'Window',
+                submenu: [
+                    { role: 'close' },
+                    { role: 'minimize' },
+                    { type: 'separator' },
+                    { role: 'front' },
+                    { type: 'separator' },
+                    { role: 'toggledevtools' }
+                ]
+            }];
+    }
+
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -69,7 +127,9 @@ app.on('ready', () => {
 
     createWindow();
 
-    ipcMain.on('launcher', (event, args: LaunchArgs) => {
+    createMenu();
+
+    ipcMain.on('launcher', (event: Electron.Event, args: LaunchArgs) => {
         nativeLauncher.launchGame(
             configuration.WowInstallDir,
             configuration.Use64Bit,
