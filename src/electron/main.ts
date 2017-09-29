@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import * as electronSettings from 'electron-settings';
 
 import { Configuration, getDefaultConfiguration } from './configuration';
@@ -68,6 +68,12 @@ function createMenu() {
             {
                 label: 'Window',
                 submenu: [
+                    {
+                        label: 'Settings',
+                        click: () => {
+                            applicationWindow.webContents.send('open-settings');
+                        }
+                    },
                     { role: 'toggledevtools' },
                     { type: 'separator' },
                     { role: 'minimize' },
@@ -128,6 +134,10 @@ app.on('ready', () => {
     createWindow();
 
     createMenu();
+
+    ipcMain.on('open-directory-selection', (event: Electron.Event) => {
+        event.sender.send('directory-selected', dialog.showOpenDialog(applicationWindow, { properties: ['openDirectory'] }));
+    });
 
     ipcMain.on('launcher', (event: Electron.Event, args: LaunchArgs) => {
         nativeLauncher.launchGame(

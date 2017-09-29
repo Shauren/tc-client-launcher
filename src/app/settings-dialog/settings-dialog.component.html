@@ -1,0 +1,32 @@
+<div class="settings-dialog-mask" [ngStyle]="{display: displayMask ? 'block' : 'none'}">
+    <div [@scaleIn]="'' + display" class="form-medium settings-dialog">
+        <form #settingsForm="ngForm" (ngSubmit)="saveConfiguration()">
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="loginServerUrl">Login URL</label>
+                    <input id="loginServerUrl" type="text" name="loginServerUrl" required ngModel>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="gameInstallDir">Path to World of Warcraft installation</label>
+                    <div class="settings-dir-selection">
+                        <input type="text" name="gameInstallDir" required disabled ngModel>
+                        <input id="gameInstallDir" type="button" value="Select..." (click)="openDirectoryPicker()">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-field form-checkbox">
+                    <input id="use64bit" type="checkbox" name="use64bit" ngModel>
+                    <label for="use64bit">Launch 64-bit client</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <input type="submit" value="Save">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

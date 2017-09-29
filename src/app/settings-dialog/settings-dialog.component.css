@@ -1,0 +1,24 @@
+.settings-dialog-mask {
+    background-color: rgba(0, 0, 0, 0.7);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.settings-dialog {
+    background-color: #424246;
+    left: 50%;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.settings-dir-selection {
+    display: flex;
+}
+
+.settings-dir-selection input[type="button"] {
+    flex: 1;
+}

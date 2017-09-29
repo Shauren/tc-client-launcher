@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { NgxElectronModule } from 'ngx-electron';
 
@@ -13,16 +14,19 @@ import { LoginComponent } from './login/login.component';
 import { LoginService } from './login/login.service';
 import { MainComponent } from './main/main.component';
 import { routes } from './routes';
+import { SettingsDialogComponent } from './settings-dialog/settings-dialog.component';
 
 @NgModule({
     declarations: [
         LoginComponent,
-        MainComponent
+        MainComponent,
+        SettingsDialogComponent
     ],
     imports: [
         FormsModule,
         HttpModule,
         BrowserModule,
+        BrowserAnimationsModule,
         RouterModule.forRoot(routes),
         NgxElectronModule
     ],
