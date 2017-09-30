@@ -1,0 +1,28 @@
+.logo {
+    background-image: url(../../assets/logo.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 33%;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.logo.animated {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    10% {
+        background-size: 38%;
+    }
+    45% {
+        background-size: 41%;
+    }
+    100% {
+        background-size: 41%;
+        opacity: 0;
+    }
+}

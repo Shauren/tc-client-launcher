@@ -8,6 +8,7 @@ import { NgxElectronModule } from 'ngx-electron';
 
 import { BnetserverService } from './bnetserver.service';
 import { ConfigurationService } from './configuration.service';
+import { LoaderComponent } from './loader/loader.component';
 import { LoginTicketService } from './login-ticket.service';
 import { LoginFormResolver } from './login/login-form.resolver';
 import { LoginComponent } from './login/login.component';
@@ -18,6 +19,7 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
 
 @NgModule({
     declarations: [
+        LoaderComponent,
         LoginComponent,
         MainComponent,
         SettingsDialogComponent
