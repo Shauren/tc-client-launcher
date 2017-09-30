@@ -59,6 +59,10 @@ export class SettingsDialogComponent implements OnChanges {
         // disabled controls don't write to .value
         this.configurationService.WowInstallDir = this.settingsForm.controls['gameInstallDir'].value;
         this.configurationService.Use64Bit = this.settingsForm.value.use64bit;
+        this.close();
+    }
+
+    close(): void {
         this.displayChange.emit(false);
     }
 

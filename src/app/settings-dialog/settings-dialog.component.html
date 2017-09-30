@@ -1,5 +1,6 @@
 <div class="settings-dialog-mask" [ngStyle]="{display: displayMask ? 'block' : 'none'}">
     <div [@scaleIn]="'' + display" class="form-medium settings-dialog">
+        <input type="button" class="settings-dialog-close-btn" (click)="close()">
         <form #settingsForm="ngForm" (ngSubmit)="saveConfiguration()">
             <div class="form-row">
                 <div class="form-field">
@@ -23,7 +24,7 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-field">
+                <div class="form-field settings-dialog-save-btn">
                     <input type="submit" value="Save">
                 </div>
             </div>

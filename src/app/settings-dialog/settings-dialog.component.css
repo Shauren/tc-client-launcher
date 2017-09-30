@@ -15,10 +15,34 @@
     transform: translate(-50%, -50%);
 }
 
+.settings-dialog-close-btn {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url(../../assets/ic_clear_white_48px.svg);
+    background-size: 24px;
+    border: none;
+    height: 24px;
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    width: 24px;
+}
+
+.settings-dialog-close-btn:hover {
+    filter: brightness(0.8);
+}
+
 .settings-dir-selection {
     display: flex;
 }
 
 .settings-dir-selection input[type="button"] {
     flex: 1;
+}
+
+.settings-dialog-save-btn {
+    text-align: right;
+}
+
+.settings-dialog-save-btn input[type="submit"] {
+    width: initial;
 }
