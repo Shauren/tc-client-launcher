@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { NgxElectronModule } from 'ngx-electron';
 
+import { Logger } from '../electron/logger';
 import { BnetserverService } from './bnetserver.service';
 import { ConfigurationService } from './configuration.service';
 import { LoaderComponent } from './loader/loader.component';
@@ -14,6 +15,7 @@ import { LoginFormResolver } from './login/login-form.resolver';
 import { LoginComponent } from './login/login.component';
 import { LoginService } from './login/login.service';
 import { MainComponent } from './main/main.component';
+import { RendererLogger } from './renderer-logger';
 import { routes } from './routes';
 import { SettingsDialogComponent } from './settings-dialog/settings-dialog.component';
 
@@ -33,6 +35,7 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
         NgxElectronModule
     ],
     providers: [
+        { provide: Logger, useClass: RendererLogger },
         ConfigurationService,
         BnetserverService,
         LoginService,

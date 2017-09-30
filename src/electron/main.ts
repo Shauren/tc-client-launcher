@@ -3,6 +3,8 @@ import * as electronSettings from 'electron-settings';
 
 import { Configuration, getDefaultConfiguration } from './configuration';
 import { LaunchArgs } from './launch-args';
+import { Logger } from './logger';
+import { MainLogger } from './main-logger';
 
 const nativeLauncher: Launcher = require('./tc_launcher.node');
 
@@ -10,10 +12,17 @@ const nativeLauncher: Launcher = require('./tc_launcher.node');
 // be closed automatically when the JavaScript object is garbage collected.
 let applicationWindow: Electron.BrowserWindow;
 let configuration: Configuration;
+let logger: Logger;
 
 function cleanup() {
-    applicationWindow = undefined;
+    logger.close();
+    logger = undefined;
     configuration = undefined;
+}
+
+function initializeLogging() {
+    logger = new MainLogger();
+    (<MainLogger>logger).initializeLogging();
 }
 
 function loadConfig() {
@@ -52,7 +61,7 @@ function createWindow() {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
-        cleanup();
+        applicationWindow = undefined;
     });
 
     applicationWindow.on('ready-to-show', () => {
@@ -128,6 +137,7 @@ function createMenu() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+    initializeLogging();
 
     loadConfig();
 
@@ -156,6 +166,10 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
     }
+});
+
+app.on('quit', () => {
+    cleanup();
 });
 
 app.on('activate', () => {
