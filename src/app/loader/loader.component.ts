@@ -1,6 +1,6 @@
 import 'rxjs/add/observable/of';
 
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
@@ -8,7 +8,8 @@ import { Observable } from 'rxjs/Observable';
 @Component({
     selector: 'tc-loader',
     templateUrl: './loader.component.html',
-    styleUrls: ['./loader.component.css']
+    styleUrls: ['./loader.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoaderComponent implements OnInit {
 

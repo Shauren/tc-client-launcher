@@ -1,5 +1,16 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    NgZone,
+    OnChanges,
+    Output,
+    SimpleChanges,
+    ViewChild
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ElectronService } from 'ngx-electron';
 
@@ -10,6 +21,7 @@ import { ConfigurationService } from '../configuration.service';
     selector: 'tc-settings-dialog',
     templateUrl: './settings-dialog.component.html',
     styleUrls: ['./settings-dialog.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('scaleIn', [
             state('false', style({ visibility: 'hidden', transform: 'translate(-50%, -50%) scale(0.95)' })),
@@ -36,6 +48,7 @@ export class SettingsDialogComponent implements OnChanges {
         private configurationService: ConfigurationService,
         private electron: ElectronService,
         private zone: NgZone,
+        private changeDetector: ChangeDetectorRef,
         private logger: Logger) {
     }
 
@@ -51,7 +64,9 @@ export class SettingsDialogComponent implements OnChanges {
                 this.displayMask = true;
             } else {
                 setTimeout(() => {
+                    this.logger.log('Settings | Hiding dialog background.');
                     this.displayMask = false;
+                    this.changeDetector.markForCheck();
                 }, 100);
             }
         }

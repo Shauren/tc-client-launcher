@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
@@ -12,7 +12,8 @@ import { LoginService } from './login.service';
 
 @Component({
     selector: 'tc-login',
-    templateUrl: './login.component.html'
+    templateUrl: './login.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent implements OnInit {
 
@@ -29,6 +30,7 @@ export class LoginComponent implements OnInit {
         private electron: ElectronService,
         private route: ActivatedRoute,
         private router: Router,
+        private changeDetector: ChangeDetectorRef,
         private logger: Logger) {
     }
 
@@ -75,6 +77,7 @@ export class LoginComponent implements OnInit {
             } else {
                 this.logger.error(`Login | Unsupported authentication state ${loginResult.authentication_state}`);
             }
+            this.changeDetector.markForCheck();
         });
     }
 }
