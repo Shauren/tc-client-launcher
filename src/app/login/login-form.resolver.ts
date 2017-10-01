@@ -19,6 +19,7 @@ export class LoginFormResolver implements Resolve<FormInputs> {
         this.logger.log('Login | Retrieving login form fields...');
         return this.loginService.getForm().catch(() => {
             this.logger.error('Login | Failed to retrieve login form!');
+            this.router.navigate(['/initialization-error']);
             return Observable.empty<FormInputs>();
         });
     }

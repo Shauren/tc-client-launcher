@@ -10,6 +10,7 @@ import { Logger } from '../electron/logger';
 import { Argv, argvFactory } from './argv';
 import { BnetserverService } from './bnetserver.service';
 import { ConfigurationService } from './configuration.service';
+import { ErrorComponent } from './error/error.component';
 import { LoaderComponent } from './loader/loader.component';
 import { LoginTicketService } from './login-ticket.service';
 import { LoginFormResolver } from './login/login-form.resolver';
@@ -22,6 +23,7 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
 
 @NgModule({
     declarations: [
+        ErrorComponent,
         LoaderComponent,
         LoginComponent,
         MainComponent,
