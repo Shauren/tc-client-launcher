@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChange
 import { NgForm } from '@angular/forms';
 import { ElectronService } from 'ngx-electron';
 
+import { Logger } from '../../electron/logger';
 import { ConfigurationService } from '../configuration.service';
 
 @Component({
@@ -34,12 +35,14 @@ export class SettingsDialogComponent implements OnChanges {
     constructor(
         private configurationService: ConfigurationService,
         private electron: ElectronService,
-        private zone: NgZone) {
+        private zone: NgZone,
+        private logger: Logger) {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if ('display' in changes) {
             if (changes['display'].currentValue) {
+                this.logger.log('Settings | Opening configuration form.');
                 this.settingsForm.setValue({
                     loginServerUrl: this.configurationService.LoginServerUrl,
                     gameInstallDir: this.configurationService.WowInstallDir,
@@ -55,21 +58,34 @@ export class SettingsDialogComponent implements OnChanges {
     }
 
     saveConfiguration(): void {
-        this.configurationService.LoginServerUrl = this.settingsForm.value.loginServerUrl;
+        const { loginServerUrl, use64bit } = this.settingsForm.value;
         // disabled controls don't write to .value
-        this.configurationService.WowInstallDir = this.settingsForm.controls['gameInstallDir'].value;
-        this.configurationService.Use64Bit = this.settingsForm.value.use64bit;
-        this.close();
+        const gameInstallDir = this.settingsForm.controls['gameInstallDir'].value;
+
+        this.logger.log(`Settings | Saving new configuration: { ` +
+            `LoginServerUrl: '${loginServerUrl}', ` +
+            `WowInstallDir: '${gameInstallDir}', ` +
+            `Use64Bit: ${use64bit} }.`);
+
+        this.configurationService.LoginServerUrl = loginServerUrl;
+        this.configurationService.WowInstallDir = gameInstallDir;
+        this.configurationService.Use64Bit = use64bit;
+        this.displayChange.emit(false);
     }
 
     close(): void {
+        this.logger.log('Settings | Closing configuration form without saving.');
         this.displayChange.emit(false);
     }
 
     openDirectoryPicker(): void {
+        this.logger.log('Settings | Opening directory picker for WowInstallDir.');
         this.electron.ipcRenderer.once('directory-selected', (event: Electron.Event, dir: string[]) => {
             if (dir != undefined) {
+                this.logger.log(`Settings | New WowInstallDir selected: ${dir[0]}.`);
                 this.zone.runGuarded(() => this.settingsForm.controls['gameInstallDir'].setValue(dir[0]));
+            } else {
+                this.logger.log('Settings | Closed directory picker without selection.');
             }
         });
         this.electron.ipcRenderer.send('open-directory-selection');

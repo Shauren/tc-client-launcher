@@ -3,6 +3,7 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 
+import { Logger } from '../../electron/logger';
 import { LoginTicketService } from '../login-ticket.service';
 import { FormInput } from './form-inputs';
 import { FormInputValue, LoginForm } from './login-form';
@@ -27,7 +28,8 @@ export class LoginComponent implements OnInit {
         private loginTicket: LoginTicketService,
         private electron: ElectronService,
         private route: ActivatedRoute,
-        private router: Router) {
+        private router: Router,
+        private logger: Logger) {
     }
 
     ngOnInit(): void {
@@ -35,6 +37,7 @@ export class LoginComponent implements OnInit {
         this.submit = this.route.snapshot.data['form'].inputs.find(input => input.type === 'submit');
         // navigating to this component means our stored credentials were not valid, clear them
         this.loginTicket.clear();
+        this.logger.log(`Login | Logging in using ${this.formInputs.map(input => input.input_id).join(', ')}`);
     }
 
     login(): void {
@@ -49,20 +52,28 @@ export class LoginComponent implements OnInit {
             return value;
         });
         this.loginError = undefined;
+        // clearing password solves two problems here
+        // * saves the user from having to do it manually in case it was wrong
+        // * makes the form invalid, disables submit button and prevents spamming requests
+        this.formInputs
+            .filter(input => input.type === 'password')
+            .forEach(input => this.loginForm.controls[input.input_id].reset());
+        this.logger.log('Login | Attempting login.');
         this.loginService.login(form).subscribe(loginResult => {
             if (loginResult.authentication_state === AuthenticationState.DONE) {
                 if (!!loginResult.login_ticket) {
+                    this.logger.log('Login | Login successful.');
                     this.loginTicket.store(loginResult.login_ticket, this.rememberLogin);
                 } else {
+                    this.logger.error('Login | Login failed.');
                     if (!!loginResult.error_message) {
                         this.loginError = loginResult.error_message;
                     } else {
                         this.loginError = 'We couldn\'t log you in with what you just entered. Please try again.';
                     }
-                    this.formInputs
-                        .filter(input => input.type === 'password')
-                        .forEach(input => this.loginForm.controls[input.input_id].reset());
                 }
+            } else {
+                this.logger.error(`Login | Unsupported authentication state ${loginResult.authentication_state}`);
             }
         });
     }

@@ -18,6 +18,7 @@ export class LoaderComponent implements OnInit {
 
     ngOnInit() {
         this.getInitialRoute().subscribe(initialRoute => {
+            this.logger.log(`Loader | Resolved initial route to ${initialRoute}`);
             this.router.navigate([initialRoute]);
         });
     }

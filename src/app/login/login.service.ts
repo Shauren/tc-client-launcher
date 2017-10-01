@@ -19,6 +19,7 @@ export class LoginService {
     }
 
     login(form: LoginForm): Observable<LoginResult> {
-        return this.http.post('login/', form).map(response => response.json());
+        return this.http.post('login/', form, {}, { bodyFilter: body => Object.assign({}, body, { inputs: '[Skipped]' }) })
+            .map(response => response.json());
     }
 }

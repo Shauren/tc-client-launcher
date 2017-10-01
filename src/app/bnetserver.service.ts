@@ -25,7 +25,7 @@ export class BnetserverService {
     get(path: string, options: RequestOptionsArgs = {}, loggingOptions: RequestLoggingOptions = {}): Observable<Response> {
         let responseObservable = this.http.get(`${this.configuration.LoginServerUrl}/${path}`, this.addTicket(options));
         if (!loggingOptions.dontLog) {
-            this.logger.log(`GET (begin) - ${this.configuration.LoginServerUrl}/${path}`);
+            this.logger.log(`Http | GET (begin) - ${this.configuration.LoginServerUrl}/${path}`);
             responseObservable = responseObservable.do(this.logResponse('GET'));
         }
         return responseObservable;
@@ -34,7 +34,7 @@ export class BnetserverService {
     post(path: string, body: any, options: RequestOptionsArgs = {}, loggingOptions: RequestLoggingOptions = {}): Observable<Response> {
         let responseObservable = this.http.post(`${this.configuration.LoginServerUrl}/${path}`, body, this.addTicket(options));
         if (!loggingOptions.dontLog) {
-            this.logger.log(`POST (begin) - ${this.configuration.LoginServerUrl}/${path}`,
+            this.logger.log(`Http | POST (begin) - ${this.configuration.LoginServerUrl}/${path}`,
                 loggingOptions.bodyFilter ? loggingOptions.bodyFilter(body) : body);
             responseObservable = responseObservable.do(this.logResponse('POST'));
         }
@@ -55,8 +55,8 @@ export class BnetserverService {
 
     private logResponse(type: 'GET' | 'POST'): PartialObserver<Response> {
         return {
-            next: (response: Response) => this.logger.log(`${type}  (done) - ${response.url} - ${response.statusText}`),
-            error: (error: Response) => this.logger.error(`${type} (error) - ${error.url} - ${error.statusText}`)
+            next: (response: Response) => this.logger.log(`Http | ${type}  (done) - ${response.url} - ${response.statusText}`),
+            error: (error: Response) => this.logger.error(`Http | ${type} (error) - ${error.url} - ${error.statusText}`)
         };
     }
 }
