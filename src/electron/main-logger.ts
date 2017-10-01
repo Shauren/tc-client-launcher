@@ -29,7 +29,7 @@ export class MainLogger extends Logger {
         this.errorFn.apply(this, arguments);
     }
 
-    initializeLogging(): void {
+    enableLogging(): void {
         fs.mkdir(`${path.dirname(process.execPath)}/logs`, (error) => {
             if (error && error.code !== 'EEXIST') {
                 console.error(error);

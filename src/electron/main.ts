@@ -1,3 +1,4 @@
+import * as commandLineArgs from 'command-line-args';
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import * as electronSettings from 'electron-settings';
 
@@ -11,6 +12,7 @@ const nativeLauncher: Launcher = require('./tc_launcher.node');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let applicationWindow: Electron.BrowserWindow;
+let commandLine: { [arg: string]: any };
 let configuration: Configuration;
 let logger: Logger;
 
@@ -20,9 +22,17 @@ function cleanup() {
     configuration = undefined;
 }
 
+function parseArgv() {
+    commandLine = commandLineArgs([{
+        name: 'logging-enabled', alias: 'l', type: Boolean
+    }], { partial: true });
+}
+
 function initializeLogging() {
     logger = new MainLogger();
-    (<MainLogger>logger).initializeLogging();
+    if (commandLine['logging-enabled']) {
+        (<MainLogger>logger).enableLogging();
+    }
 }
 
 function loadConfig() {
@@ -51,6 +61,10 @@ function createWindow() {
         width: 640,
         height: 480,
         show: false
+    });
+
+    ipcMain.once('get-argv', (event: Electron.Event) => {
+        event.returnValue = commandLine;
     });
 
     // and load the index.html of the app.
@@ -137,6 +151,8 @@ function createMenu() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+    parseArgv();
+
     initializeLogging();
 
     loadConfig();
