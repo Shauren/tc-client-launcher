@@ -19,6 +19,8 @@ export class ErrorComponent {
         switch (this.getErrorCode()) {
             case 'TCL001':
                 return `Failed to initialize login form, check if your 'Login URL' setting is correct and the server is running.`;
+            case 'TCL002':
+                return 'Failed to retrieve login portal, launching the game will not be possible. Please submit a bug report.';
             case 'TCL404':
                 return 'Unexpected component navigation error.';
             default:

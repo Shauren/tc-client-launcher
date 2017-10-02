@@ -55,7 +55,7 @@ export class SettingsDialogComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if ('display' in changes) {
             if (changes['display'].currentValue) {
-                this.logger.log('Settings | Opening configuration form.');
+                this.logger.log('Settings | Opening configuration form');
                 this.settingsForm.setValue({
                     loginServerUrl: this.configurationService.LoginServerUrl,
                     gameInstallDir: this.configurationService.WowInstallDir,
@@ -64,7 +64,7 @@ export class SettingsDialogComponent implements OnChanges {
                 this.displayMask = true;
             } else {
                 setTimeout(() => {
-                    this.logger.log('Settings | Hiding dialog background.');
+                    this.logger.log('Settings | Hiding dialog background');
                     this.displayMask = false;
                     this.changeDetector.markForCheck();
                 }, 100);
@@ -80,7 +80,7 @@ export class SettingsDialogComponent implements OnChanges {
         this.logger.log(`Settings | Saving new configuration: { ` +
             `LoginServerUrl: '${loginServerUrl}', ` +
             `WowInstallDir: '${gameInstallDir}', ` +
-            `Use64Bit: ${use64bit} }.`);
+            `Use64Bit: ${use64bit} }`);
 
         this.configurationService.LoginServerUrl = loginServerUrl;
         this.configurationService.WowInstallDir = gameInstallDir;
@@ -89,18 +89,18 @@ export class SettingsDialogComponent implements OnChanges {
     }
 
     close(): void {
-        this.logger.log('Settings | Closing configuration form without saving.');
+        this.logger.log('Settings | Closing configuration form without saving');
         this.displayChange.emit(false);
     }
 
     openDirectoryPicker(): void {
-        this.logger.log('Settings | Opening directory picker for WowInstallDir.');
+        this.logger.log('Settings | Opening directory picker for WowInstallDir');
         this.electron.ipcRenderer.once('directory-selected', (event: Electron.Event, dir: string[]) => {
             if (dir != undefined) {
                 this.logger.log(`Settings | New WowInstallDir selected: ${dir[0]}.`);
                 this.zone.runGuarded(() => this.settingsForm.controls['gameInstallDir'].setValue(dir[0]));
             } else {
-                this.logger.log('Settings | Closed directory picker without selection.');
+                this.logger.log('Settings | Closed directory picker without selection');
             }
         });
         this.electron.ipcRenderer.send('open-directory-selection');

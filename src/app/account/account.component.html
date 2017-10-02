@@ -1,0 +1,48 @@
+<div class="account">
+    <div class="form-game-account-select">
+        <form #gameAccountSelectionForm="ngForm" (ngSubmit)="launch()">
+            <div class="form-row">
+                <div class="form-field">
+                    <select name="gameAccount" required [(ngModel)]="selectedGameAccount" [disabled]="noGameAccounts">
+                        <option *ngFor="let gameAccount of gameAccounts" [ngValue]="gameAccount">{{ gameAccount.display_name }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <input type="submit" value="Play" [disabled]="!gameAccountSelectionForm.valid || !launchEnabled()">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div *ngIf="!noGameAccounts" class="game-account-details">
+        <div class="game-account-details-panel">
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Name</label>
+                    <div>{{ selectedGameAccount.display_name }}</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Expansion</label>
+                    <div>{{ formatExpansionName(selectedGameAccount.expansion) }}</div>
+                </div>
+            </div>
+            <ng-container *ngIf="selectedGameAccount.is_suspended || selectedGameAccount.is_banned">
+                <div class="form-row ban-info">
+                    <div class="form-field">
+                        <label>Banned</label>
+                        <div>{{ selectedGameAccount.suspension_reason }}</div>
+                    </div>
+                </div>
+                <div class="form-row ban-info" *ngIf="!selectedGameAccount.is_banned">
+                    <div class="form-field">
+                        <label>Expires</label>
+                        <div>{{ formatBanExpirationTime(selectedGameAccount.suspension_expires) }}</div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

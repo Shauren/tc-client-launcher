@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
@@ -15,7 +15,7 @@ import { LoginService } from './login.service';
     templateUrl: './login.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterViewInit {
 
     formInputs: FormInput[];
     submit: FormInput;
@@ -42,6 +42,10 @@ export class LoginComponent implements OnInit {
         this.logger.log(`Login | Logging in using ${this.formInputs.map(input => input.input_id).join(', ')}`);
     }
 
+    ngAfterViewInit(): void {
+        this.loginForm.statusChanges.subscribe(() => this.changeDetector.markForCheck());
+    }
+
     login(): void {
         const form = new LoginForm();
         form.platform_id = this.electron.process.platform;
@@ -60,14 +64,15 @@ export class LoginComponent implements OnInit {
         this.formInputs
             .filter(input => input.type === 'password')
             .forEach(input => this.loginForm.controls[input.input_id].reset());
-        this.logger.log('Login | Attempting login.');
+        this.logger.log('Login | Attempting login');
         this.loginService.login(form).subscribe(loginResult => {
             if (loginResult.authentication_state === AuthenticationState.DONE) {
                 if (!!loginResult.login_ticket) {
-                    this.logger.log('Login | Login successful.');
+                    this.logger.log('Login | Login successful');
                     this.loginTicket.store(loginResult.login_ticket, this.rememberLogin);
+                    this.router.navigate(['/account']);
                 } else {
-                    this.logger.error('Login | Login failed.');
+                    this.logger.error('Login | Login failed');
                     if (!!loginResult.error_message) {
                         this.loginError = loginResult.error_message;
                     } else {

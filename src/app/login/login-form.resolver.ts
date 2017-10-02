@@ -16,7 +16,7 @@ export class LoginFormResolver implements Resolve<FormInputs> {
     }
 
     public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<FormInputs> {
-        this.logger.log('Login | Retrieving login form fields...');
+        this.logger.log('Login | Retrieving login form fields');
         return this.loginService.getForm().catch(error => {
             this.logger.error('Login | Failed to retrieve login form!', error);
             this.router.navigate(['/initialization-error']);

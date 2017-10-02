@@ -7,6 +7,9 @@ import { RouterModule } from '@angular/router';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
 
 import { Logger } from '../electron/logger';
+import { AccountComponent } from './account/account.component';
+import { AccountService } from './account/account.service';
+import { GameAccountResolver } from './account/game-account.resolver';
 import { Argv, argvFactory } from './argv';
 import { AuthHttpInterceptor } from './auth-http-interceptor';
 import { BnetserverUrlHttpInterceptor } from './bnetserver-url-http-interceptor';
@@ -19,12 +22,14 @@ import { LoginFormResolver } from './login/login-form.resolver';
 import { LoginComponent } from './login/login.component';
 import { LoginService } from './login/login.service';
 import { MainComponent } from './main/main.component';
+import { PortalResolver } from './portal-resolver';
 import { RendererLogger } from './renderer-logger';
 import { routes } from './routes';
 import { SettingsDialogComponent } from './settings-dialog/settings-dialog.component';
 
 @NgModule({
     declarations: [
+        AccountComponent,
         ErrorComponent,
         LoaderComponent,
         LoginComponent,
@@ -49,6 +54,9 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
         LoginService,
         LoginFormResolver,
         LoginTicketService,
+        AccountService,
+        GameAccountResolver,
+        PortalResolver
     ],
     bootstrap: [MainComponent]
 })

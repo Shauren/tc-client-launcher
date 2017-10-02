@@ -1,0 +1,28 @@
+.account {
+    display: flex;
+    height: 100%;
+}
+
+.form-game-account-select {
+    box-sizing: border-box;
+    display: inline-block;
+    padding: 24px;
+    width: 256px;
+}
+
+.game-account-details {
+    box-sizing: border-box;
+    flex: 1;
+    height: 100%;
+    padding: 24px;
+}
+
+.game-account-details-panel {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    color: #000000;
+}
+
+.ban-info {
+    color: #CE3B42;
+}
