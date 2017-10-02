@@ -1,6 +1,6 @@
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -8,10 +8,12 @@ import { ElectronService, NgxElectronModule } from 'ngx-electron';
 
 import { Logger } from '../electron/logger';
 import { Argv, argvFactory } from './argv';
-import { BnetserverService } from './bnetserver.service';
+import { AuthHttpInterceptor } from './auth-http-interceptor';
+import { BnetserverUrlHttpInterceptor } from './bnetserver-url-http-interceptor';
 import { ConfigurationService } from './configuration.service';
 import { ErrorComponent } from './error/error.component';
 import { LoaderComponent } from './loader/loader.component';
+import { LoggingHttpInterceptor } from './logging-http-interceptor';
 import { LoginTicketService } from './login-ticket.service';
 import { LoginFormResolver } from './login/login-form.resolver';
 import { LoginComponent } from './login/login.component';
@@ -31,17 +33,19 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
     ],
     imports: [
         FormsModule,
-        HttpModule,
+        HttpClientModule,
         BrowserModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(routes),
         NgxElectronModule
     ],
     providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: BnetserverUrlHttpInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: LoggingHttpInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
         { provide: Argv, useFactory: argvFactory, deps: [ElectronService] },
         { provide: Logger, useClass: RendererLogger },
         ConfigurationService,
-        BnetserverService,
         LoginService,
         LoginFormResolver,
         LoginTicketService,

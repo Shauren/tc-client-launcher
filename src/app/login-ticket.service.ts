@@ -3,8 +3,12 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class LoginTicketService {
 
+    static getTicket(): string {
+        return localStorage.getItem('ticket');
+    }
+
     getTicket(): string {
-        return sessionStorage.getItem('ticket');
+        return LoginTicketService.getTicket();
     }
 
     store(loginTicket: string, rememberLogin: boolean): void {
