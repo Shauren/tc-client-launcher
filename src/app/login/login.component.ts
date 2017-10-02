@@ -71,6 +71,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                     this.logger.log('Login | Login successful');
                     this.loginTicket.store(loginResult.login_ticket, this.rememberLogin);
                     this.router.navigate(['/account']);
+                    this.electron.ipcRenderer.send('login');
                 } else {
                     this.logger.error('Login | Login failed');
                     if (!!loginResult.error_message) {

@@ -15,6 +15,7 @@ let applicationWindow: Electron.BrowserWindow;
 let commandLine: { [arg: string]: any };
 let configuration: Configuration;
 let logger: Logger;
+let logoutMenuItem: Electron.MenuItemConstructorOptions;
 
 function cleanup() {
     logger.close();
@@ -60,6 +61,7 @@ function createWindow() {
     applicationWindow = new BrowserWindow({
         width: 640,
         height: 480,
+        backgroundColor: '#2D2D30',
         show: false
     });
 
@@ -83,7 +85,25 @@ function createWindow() {
     });
 }
 
+function setLogoutMenuVisible(visible: boolean) {
+    const windowMenuItems: Electron.MenuItem[] =
+        (<any>Menu.getApplicationMenu().items.find(menuItem => menuItem.label === 'Window')).submenu.items;
+    const logoutIndex = windowMenuItems.findIndex(menuItem => menuItem.label === 'Logout');
+    windowMenuItems[logoutIndex].visible = visible;
+}
+
 function createMenu() {
+    ipcMain.on('login', () => {
+        setLogoutMenuVisible(true);
+    });
+
+    logoutMenuItem = {
+        label: 'Logout', visible: false, click: () => {
+            applicationWindow.webContents.send('logout');
+            setLogoutMenuVisible(false);
+        }
+    };
+
     let template: Electron.MenuItemConstructorOptions[];
 
     if (process.platform !== 'darwin') {
@@ -99,6 +119,7 @@ function createMenu() {
                     },
                     { role: 'toggledevtools' },
                     { type: 'separator' },
+                    logoutMenuItem,
                     { role: 'minimize' },
                     { role: 'close' }
                 ]
@@ -136,6 +157,7 @@ function createMenu() {
                 submenu: [
                     { role: 'close' },
                     { role: 'minimize' },
+                    logoutMenuItem,
                     { type: 'separator' },
                     { role: 'front' },
                     { type: 'separator' },
