@@ -1,9 +1,15 @@
 import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/mergeMap';
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
+import { Logger } from '../../electron/logger';
+import { LoginRefreshResult } from '../login-refresh-result';
+import { LoginTicketService } from '../login-ticket.service';
+import { LoginService } from '../login/login.service';
 
 @Component({
     selector: 'tc-loader',
@@ -14,7 +20,10 @@ import { Observable } from 'rxjs/Observable';
 export class LoaderComponent implements OnInit {
 
     constructor(
-        private router: Router) {
+        private loginTicket: LoginTicketService,
+        private loginService: LoginService,
+        private router: Router,
+        private logger: Logger) {
     }
 
     ngOnInit() {
@@ -25,6 +34,20 @@ export class LoaderComponent implements OnInit {
     }
 
     private getInitialRoute(): Observable<string> {
+        if (this.loginTicket.shouldAttemptRememberedLogin()) {
+            this.logger.log(`Loader | Found remembered login`);
+            return this.loginTicket.refresh()
+                .catch<LoginRefreshResult, LoginRefreshResult>(() => {
+                    this.logger.error(`Loader | Error checking remembered login`);
+                    return Observable.of({ is_expired: true });
+                })
+                .flatMap(loginTicketStatus => {
+                    this.logger.log(`Loader | Remembered login status: ${loginTicketStatus.is_expired ? 'in' : ''}valid`);
+                    return Observable.of(loginTicketStatus.is_expired ? '/login' : '/account');
+                });
+        }
+
+        this.logger.log(`Loader | Remembered login not found`);
         return Observable.of('/login');
     }
 }

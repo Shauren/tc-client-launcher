@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 
 import { Logger } from '../../electron/logger';
+import { ConfigurationService } from '../configuration.service';
 import { LoginTicketService } from '../login-ticket.service';
 import { FormInput } from './form-inputs';
 import { FormInputValue, LoginForm } from './login-form';
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     formInputs: FormInput[];
     submit: FormInput;
+    rememberLogin: boolean;
     loginError: string;
 
     @ViewChild('loginForm')
@@ -28,6 +30,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         private loginService: LoginService,
         private loginTicket: LoginTicketService,
         private electron: ElectronService,
+        private configuration: ConfigurationService,
         private route: ActivatedRoute,
         private router: Router,
         private changeDetector: ChangeDetectorRef,
@@ -37,6 +40,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         this.formInputs = this.route.snapshot.data['form'].inputs.filter(input => input.type !== 'submit');
         this.submit = this.route.snapshot.data['form'].inputs.find(input => input.type === 'submit');
+        this.rememberLogin = this.configuration.RememberLogin;
         // navigating to this component means our stored credentials were not valid, clear them
         this.loginTicket.clear();
         this.logger.log(`Login | Logging in using ${this.formInputs.map(input => input.input_id).join(', ')}`);

@@ -18,6 +18,12 @@
                     <input type="submit" [attr.value]="submit.label" [disabled]="!loginForm.valid">
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-field form-checkbox">
+                    <input id="rememberLogin" type="checkbox" [(ngModel)]="rememberLogin" [ngModelOptions]="{standalone: true}">
+                    <label for="rememberLogin">Remember login</label>
+                </div>
+            </div>
         </form>
     </div>
 </div>
