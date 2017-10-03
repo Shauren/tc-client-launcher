@@ -65,6 +65,7 @@ export class AccountComponent implements OnInit, OnDestroy {
             this.gameAccounts = [NO_GAME_ACCOUNT];
         }
         this.selectedGameAccount = lastAccount || this.gameAccounts[0];
+        this.electronService.ipcRenderer.send('login');
         this.logger.log('Account | Initialized account view', this.gameAccounts.map(gameAccount => gameAccount.display_name),
             `last selected game account: ${lastAccount ? lastAccount.display_name : 'none'}`);
     }
