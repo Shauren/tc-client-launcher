@@ -1,6 +1,6 @@
 {
   "name": "tc-launcher",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "main.js",
   "dependencies": {
     "command-line-args": "^4.0.7",
