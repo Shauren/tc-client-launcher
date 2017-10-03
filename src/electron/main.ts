@@ -117,7 +117,7 @@ function createMenu() {
                             applicationWindow.webContents.send('open-settings');
                         }
                     },
-                    { role: 'toggledevtools' },
+                    // { role: 'toggledevtools' },
                     { type: 'separator' },
                     logoutMenuItem,
                     { role: 'minimize' },
@@ -160,8 +160,7 @@ function createMenu() {
                     logoutMenuItem,
                     { type: 'separator' },
                     { role: 'front' },
-                    { type: 'separator' },
-                    { role: 'toggledevtools' }
+                    // { role: 'toggledevtools' }
                 ]
             }];
     }
