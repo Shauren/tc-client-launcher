@@ -9,7 +9,8 @@
     "build-all-dev": "npm run build && npm run build-electron && npm run build-native",
     "electron": "electron --remote-debugging-port=9222 dist/main.js",
     "install-electron-deps": "pushd dist && npm install && popd",
-    "build-package:win": "ng build --aot --prod --base-href . && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite --icon=src/assets/icon.ico --win32metadata.CompanyName=Shauren --win32metadata.ProductName=\"TrinityCore Client Launcher\""
+    "build-package:mac": "ng build --progress=false --aot --prod --base-href . && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite --icon=src/assets/icon.icns && 7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=64m -ms=on -snl bin/trinitycore-launcher-darwin-x64.7z bin/trinitycore-launcher-darwin-x64",
+    "build-package:win": "ng build --progress=false --aot --prod --base-href . && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite --icon=src/assets/icon.ico --win32metadata.CompanyName=Shauren --win32metadata.ProductName=\"TrinityCore Client Launcher\" && 7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=64m -ms=on -snl bin/trinitycore-launcher-win32-x64.7z bin/trinitycore-launcher-win32-x64"
   },
   "gypfile": true,
   "private": true,

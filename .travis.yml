@@ -1,0 +1,29 @@
+os: osx
+
+git:
+  depth: 1
+
+language: node_js
+
+node_js:
+  - '8'
+
+cache:
+  directories:
+    - node_modules
+
+before_install:
+  - brew install p7zip
+
+script: npm run build-package:mac
+
+deploy:
+  provider: releases
+  api_key:
+    secure: rYfJrybSwB8dd0eaTucLNHgHWUV4dHien5pMULDsST8cK0LgSfVeYFJ0FwemO0AeF3Tha8v4VASJL7xwbDMQn4Dmucm3e35SfpcnSOp2hjCbgzsJ20nMVcGrPl4mkFwRamreuZvDNenJBRjlhYtY40wLcuVZbJPQFqHWGxqwr95pJvXvWZT7P3xOCsXcRkhqq+0s4AxY1PD3waKdhhIBJjsDkx1U28KC/z6xieVSZMnN/mFgcuqLUcIfiff5MVU9XkusGQdwBhRfw3Dx9M7n/BSx3LqGdl6lSYhiVfliNz1mUZRVfk5xoNpEndyZiLgBnknQX6AfQoPVstAE8h+ZQ1sRvyXOHOUMfklwgPK/NKKle8aYvllE33dKytgWLVJY+p6nsPgXBWz6Yz8XkUxELciPfClSNenfYig7U/7R5b8zdUCorAJL+kxTsf+CEGJ3v7r9bfnxrs5fo8OmqaaJEpNSpIOlDfhmy5bHZSXZzzZHm1HohaswUJHKskhVyPXSDi/lfssa6FaSIbs44ukH9TYWcewS70JoSqC9weDF3WuOJpkBGgC9XL2E0T3IZMMXlefbmnYo7WCm8RRchSI41xW1CSJ1VspnyRuqPGhT1eOf1Q0JeSLpQyguZT+jMD9sse+J4c5NnQKJAqdEG35MLPMOiljv+F+AgcQ64GUswNA=
+  file: bin/trinitycore-launcher-darwin-x64.7z
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: Shauren/tc-client-launcher
+    tags: true
