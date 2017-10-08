@@ -131,6 +131,15 @@ function createMenu() {
             {
                 label: app.getName(),
                 submenu: [
+                    {
+                        label: 'Settings',
+                        click: () => {
+                            applicationWindow.webContents.send('open-settings');
+                        }
+                    },
+                    // { role: 'toggledevtools' },
+                    { type: 'separator' },
+                    logoutMenuItem,
                     { role: 'hide' },
                     { role: 'hideothers' },
                     { role: 'unhide' },
@@ -158,10 +167,8 @@ function createMenu() {
                 submenu: [
                     { role: 'close' },
                     { role: 'minimize' },
-                    logoutMenuItem,
                     { type: 'separator' },
-                    { role: 'front' },
-                    // { role: 'toggledevtools' }
+                    { role: 'front' }
                 ]
             }];
     }
