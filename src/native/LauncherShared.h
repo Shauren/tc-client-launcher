@@ -2,8 +2,11 @@
 #ifndef LauncherShared_h__
 #define LauncherShared_h__
 
+#include <vector>
 #include <cstdint>
 
+bool EncryptString(char const* string, std::vector<uint8_t>* output);
+bool DecryptString(std::vector<uint8_t> const& encryptedString, std::string* output);
 bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* gameAccount);
 bool LaunchGameWithLogin(char const* gameInstallDir, bool use64Bit);
 

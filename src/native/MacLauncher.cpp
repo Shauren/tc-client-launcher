@@ -45,13 +45,15 @@ bool ProcessData(CSSM_DATA_PTR inData, CSSM_DATA_PTR outData, bool encrypt)
 
 bool EncryptString(char const* string, std::vector<uint8_t>* output)
 {
+    output->clear();
+
     CSSM_DATA       inData = {strlen(string), (uint8*)string};
     CSSM_DATA       encryptedData = {0, NULL};
 
     if (!ProcessData(&inData, &encryptedData, true))
         return false;
 
-    output->insert(output->end(), &encryptedData.Data[0], &encryptedData.Data[encryptedData.Length]);
+    std::copy(encryptedData.Data[0], encryptedData.Data[encryptedData.Length], std::back_inserter(*output));
 
     free(encryptedData.Data);
     return true;
@@ -59,13 +61,15 @@ bool EncryptString(char const* string, std::vector<uint8_t>* output)
 
 bool DecryptString(std::vector<uint8_t> const& encryptedString, std::string* output)
 {
+    output->clear();
+
     CSSM_DATA       inData = {encryptedString.size(), (uint8*)encryptedString.data()};
     CSSM_DATA       plainData = {0, NULL};
 
     if (!ProcessData(&inData, &plainData, false))
         return false;
 
-    *output = reinterpret_cast<char const*>(plainData.Data);
+    output->assign(reinterpret_cast<char const*>(plainData.Data), plainData.Length);
 
     free(plainData.Data);
     return true;

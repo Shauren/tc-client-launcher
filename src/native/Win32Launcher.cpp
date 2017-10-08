@@ -18,6 +18,38 @@
 UNIQUE_DELETER(HKEY, RegCloseKey)
 UNIQUE_DELETER(HLOCAL, LocalFree)
 
+bool EncryptString(char const* string, std::vector<uint8_t>* output)
+{
+    output->clear();
+
+    DATA_BLOB inputBlob{ (DWORD)strlen(string), (BYTE*)string };
+    DATA_BLOB entropy{ std::extent_v<decltype(Entropy)>, (BYTE*)Entropy };
+    DATA_BLOB outputBlob{};
+
+    if (!CryptProtectData(&inputBlob, L"TcLauncher", &entropy, nullptr, nullptr, CRYPTPROTECT_UI_FORBIDDEN, &outputBlob))
+        return false;
+
+    std::unique_ptr<HLOCAL, LocalFreeDeleter> outputDeleter(outputBlob.pbData);
+    std::copy(outputBlob.pbData, outputBlob.pbData + outputBlob.cbData, std::back_inserter(*output));
+    return true;
+}
+
+bool DecryptString(std::vector<uint8_t> const& encryptedString, std::string* output)
+{
+    output->clear();
+
+    DATA_BLOB inputBlob{ (DWORD)encryptedString.size(), (BYTE*)encryptedString.data() };
+    DATA_BLOB entropy{ std::extent_v<decltype(Entropy)>, (BYTE*)Entropy };
+    DATA_BLOB outpubBlob{};
+
+    if (!CryptUnprotectData(&inputBlob, nullptr, &entropy, nullptr, nullptr, CRYPTPROTECT_UI_FORBIDDEN, &outpubBlob))
+        return false;
+
+    std::unique_ptr<HLOCAL, LocalFreeDeleter> outputDeleter(outpubBlob.pbData);
+    output->assign(reinterpret_cast<char const*>(outpubBlob.pbData), outpubBlob.cbData);
+    return true;
+}
+
 bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* gameAccount)
 {
     HKEY launcherKey;
@@ -32,16 +64,11 @@ bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* g
     if (RegSetValueExA(launcherKey, GAME_ACCOUNT_NAME, 0, REG_SZ, reinterpret_cast<BYTE const*>(gameAccount), strlen(gameAccount) + 1) != ERROR_SUCCESS)
         return false;
 
-    DATA_BLOB ticketInput{ (DWORD)strlen(loginTicket), (BYTE*)loginTicket };
-    DATA_BLOB entropy{ std::extent_v<decltype(Entropy)>, (BYTE*)Entropy };
-    DATA_BLOB ticketOutput{};
-
-    if (!CryptProtectData(&ticketInput, L"TcLauncher", &entropy, nullptr, nullptr, CRYPTPROTECT_UI_FORBIDDEN, &ticketOutput))
+    std::vector<uint8_t> encryptedTicket;
+    if (!EncryptString(loginTicket, &encryptedTicket))
         return false;
 
-    std::unique_ptr<HLOCAL, LocalFreeDeleter> output(ticketOutput.pbData);
-
-    if (RegSetValueExA(launcherKey, LOGIN_TICKET, 0, REG_BINARY, ticketOutput.pbData, ticketOutput.cbData) != ERROR_SUCCESS)
+    if (RegSetValueExA(launcherKey, LOGIN_TICKET, 0, REG_BINARY, encryptedTicket.data(), encryptedTicket.size()) != ERROR_SUCCESS)
         return false;
 
     return true;
