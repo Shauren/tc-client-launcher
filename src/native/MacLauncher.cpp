@@ -1,12 +1,15 @@
-#include <string>
 #include "CDSACrypt.h"
 #include "LauncherShared.h"
+#include <string>
+#include <CoreFoundation/CFPreferences.h>
 
 bool ProcessData(CSSM_DATA_PTR inData, CSSM_DATA_PTR outData, bool encrypt)
 {
+    // Initialize CDSA
     CSSM_CSP_HANDLE cspHandle;
-    CSSM_KEY        cdsaKey;
-    CSSM_DATA       salt = {8, (uint8*)"someSalt"};
+    CSSM_RETURN crtn = CDSA::CspAttach(&cspHandle);
+    if (crtn)
+        return false;
 
     // Create encryption password
     char const* username = getenv("USER");
@@ -14,40 +17,38 @@ bool ProcessData(CSSM_DATA_PTR inData, CSSM_DATA_PTR outData, bool encrypt)
 
     uint8 rawPassword[16];
     std::copy(std::begin(Entropy), std::end(Entropy), std::begin(rawPassword));
-    for (int i = 0; i < xorLength; i++)
+    for (uint8 i = 0; i < xorLength; i++)
         rawPassword[i] ^= username[i];
-    CSSM_DATA password = {16, rawPassword};
 
-    // Initialize CDSA
-    CSSM_RETURN crtn = cdsaCspAttach(&cspHandle);
-    if(crtn)
-        return false;
+    CSSM_DATA password = { 16, rawPassword };
 
     // Create encryption key
-    crtn = cdsaDeriveKey(cspHandle, password, salt, CSSM_ALGID_AES, 128, &cdsaKey);
-    if(crtn)
+    CSSM_DATA salt = { 8, (uint8*)"someSalt" };
+    CSSM_KEY cdsaKey;
+    crtn = CDSA::DeriveKey(cspHandle, password, salt, CSSM_ALGID_AES, 128, &cdsaKey);
+    if (crtn)
+    {
+        CDSA::CspDetach(cspHandle);
         return false;
+    }
 
     if (encrypt)
-        crtn = cdsaEncrypt(cspHandle, &cdsaKey, inData, outData);
+        crtn = CDSA::Encrypt(cspHandle, &cdsaKey, inData, outData);
     else
-        crtn = cdsaDecrypt(cspHandle, &cdsaKey, inData, outData);
-
-    if(crtn)
-        return false;
+        crtn = CDSA::Decrypt(cspHandle, &cdsaKey, inData, outData);
 
     // Free resources
-    cdsaFreeKey(cspHandle, &cdsaKey);
-    cdsaCspDetach(cspHandle);
-    return true;
+    CDSA::FreeKey(cspHandle, &cdsaKey);
+    CDSA::CspDetach(cspHandle);
+    return !crtn;
 }
 
 bool EncryptString(char const* string, std::vector<uint8_t>* output)
 {
     output->clear();
 
-    CSSM_DATA       inData = {strlen(string), (uint8*)string};
-    CSSM_DATA       encryptedData = {0, NULL};
+    CSSM_DATA inData = { strlen(string), (uint8*)string };
+    CSSM_DATA encryptedData = { 0, nullptr };
 
     if (!ProcessData(&inData, &encryptedData, true))
         return false;
@@ -62,8 +63,8 @@ bool DecryptString(std::vector<uint8_t> const& encryptedString, std::string* out
 {
     output->clear();
 
-    CSSM_DATA       inData = {encryptedString.size(), (uint8*)encryptedString.data()};
-    CSSM_DATA       plainData = {0, NULL};
+    CSSM_DATA inData = { encryptedString.size(), (uint8*)encryptedString.data() };
+    CSSM_DATA plainData = { 0, nullptr };
 
     if (!ProcessData(&inData, &plainData, false))
         return false;
@@ -81,9 +82,9 @@ bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* g
         return false;
 
     CFStringRef app = CFSTR("org.trnity");
-    CFPreferencesSetAppValue(CFSTR("Launch Options/WoW/WEB_TOKEN"), CFDataCreate(NULL, encryptedTicket.data(), encryptedTicket.size()), app);
-    CFPreferencesSetAppValue(CFSTR("Launch Options/WoW/GAME_ACCOUNT"), CFStringCreateWithCString(NULL, gameAccount, kCFStringEncodingUTF8), app);
-    CFPreferencesSetAppValue(CFSTR("Launch Options/WoW/CONNECTION_STRING"), CFStringCreateWithCString(NULL, portal, kCFStringEncodingUTF8), app);
+    CFPreferencesSetAppValue(CFSTR("Launch Options/WoW/" LOGIN_TICKET), CFDataCreate(nullptr, encryptedTicket.data(), encryptedTicket.size()), app);
+    CFPreferencesSetAppValue(CFSTR("Launch Options/WoW/" GAME_ACCOUNT_NAME), CFStringCreateWithCString(nullptr, gameAccount, kCFStringEncodingUTF8), app);
+    CFPreferencesSetAppValue(CFSTR("Launch Options/WoW/" PORTAL_ADDRESS), CFStringCreateWithCString(nullptr, portal, kCFStringEncodingUTF8), app);
     CFPreferencesAppSynchronize(app);
 
     return true;
