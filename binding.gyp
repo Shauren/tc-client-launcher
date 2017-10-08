@@ -21,6 +21,11 @@
           "sources": [
             "src/native/MacLauncher.cpp"
           ],
+          "xcode_settings": {
+            "OTHER_CFLAGS": [
+              "-std=c++14"
+            ],
+          }
         }]
       ]
     }
