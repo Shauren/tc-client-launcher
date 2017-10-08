@@ -106,6 +106,31 @@ CSSM_RETURN cdsaCspDetach(CSSM_CSP_HANDLE cspHandle)
 }
 
 /*
+ * Create an encryption context for the specified key
+ */
+static CSSM_RETURN genCryptHandle(CSSM_CSP_HANDLE cspHandle, const CSSM_KEY *key, const CSSM_DATA *ivPtr, CSSM_CC_HANDLE *ccHandle)
+{
+    CSSM_RETURN            crtn;
+    CSSM_CC_HANDLE         ccHand = 0;
+    
+    crtn = CSSM_CSP_CreateSymmetricContext(cspHandle,
+                                           key->KeyHeader.AlgorithmId,
+                                           CSSM_ALGMODE_CBCPadIV8,
+                                           NULL,            // access cred
+                                           key,
+                                           ivPtr,            // InitVector
+                                           CSSM_PADDING_PKCS7,
+                                           NULL,            // Params
+                                           &ccHand);
+    
+    if(crtn) {
+        return crtn;
+    }
+    *ccHandle = ccHand;
+    return CSSM_OK;
+}
+
+/*
  * Derive a symmetric CSSM_KEY from the specified raw key material.
  */
 CSSM_RETURN cdsaDeriveKey(CSSM_CSP_HANDLE cspHandle, CSSM_DATA rawKey, CSSM_DATA salt, CSSM_ALGORITHMS keyAlg, uint32 keySizeInBits, CSSM_KEY_PTR key)
@@ -174,19 +199,7 @@ CSSM_RETURN cdsaEncrypt(CSSM_CSP_HANDLE cspHandle, const CSSM_KEY *key, const CS
     CSSM_DATA        remData = {0, NULL};
     CSSM_SIZE        bytesEncrypted;
     
-    CSSM_ACCESS_CREDENTIALS creds;
-    memset(&creds, 0, sizeof(CSSM_ACCESS_CREDENTIALS));
-    
-    crtn = CSSM_CSP_CreateSymmetricContext(cspHandle,
-                                           key->KeyHeader.AlgorithmId,
-                                           CSSM_ALGMODE_CBCPadIV8,
-                                           NULL,            // access cred
-                                           key,
-                                           &ivCommon,            // InitVector
-                                           CSSM_PADDING_PKCS7,
-                                           NULL,            // Params
-                                           &ccHandle);
-    
+    crtn = genCryptHandle(cspHandle, key, &ivCommon, &ccHandle);
     if(crtn) {
         return crtn;
     }
@@ -215,6 +228,49 @@ CSSM_RETURN cdsaEncrypt(CSSM_CSP_HANDLE cspHandle, const CSSM_KEY *key, const CS
         memmove(cipherText->Data + cipherText->Length,
                 remData.Data, remData.Length);
         cipherText->Length = newLen;
+        appFree(remData.Data, NULL);
+    }
+    return CSSM_OK;
+}
+
+/*
+ * Decrypt
+ */
+CSSM_RETURN cdsaDecrypt( CSSM_CSP_HANDLE cspHandle, const CSSM_KEY *key, const CSSM_DATA *cipherText, CSSM_DATA_PTR plainText)
+{
+    CSSM_RETURN      crtn;
+    CSSM_CC_HANDLE   ccHandle;
+    CSSM_DATA        remData = {0, NULL};
+    CSSM_SIZE        bytesDecrypted;
+    
+    crtn = genCryptHandle(cspHandle, key, &ivCommon, &ccHandle);
+    if(crtn) {
+        return crtn;
+    }
+    plainText->Length = 0;
+    plainText->Data = NULL;
+    crtn = CSSM_DecryptData(ccHandle,
+                            cipherText,
+                            1,
+                            plainText,
+                            1,
+                            &bytesDecrypted,
+                            &remData);
+    CSSM_DeleteContext(ccHandle);
+    if(crtn) {
+        return crtn;
+    }
+    
+    plainText->Length = bytesDecrypted;
+    if(remData.Length != 0) {
+        /* append remaining data to plainText */
+        uint32 newLen = plainText->Length + remData.Length;
+        plainText->Data = (uint8 *)appRealloc(plainText->Data,
+                                              newLen,
+                                              NULL);
+        memmove(plainText->Data + plainText->Length,
+                remData.Data, remData.Length);
+        plainText->Length = newLen;
         appFree(remData.Data, NULL);
     }
     return CSSM_OK;

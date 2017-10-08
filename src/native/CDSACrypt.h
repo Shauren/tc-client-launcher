@@ -15,6 +15,7 @@ CSSM_RETURN cdsaDeriveKey(CSSM_CSP_HANDLE cspHandle, CSSM_DATA rawKey, CSSM_DATA
 CSSM_RETURN cdsaFreeKey(CSSM_CSP_HANDLE cspHandle, CSSM_KEY_PTR key);
     
 CSSM_RETURN cdsaEncrypt(CSSM_CSP_HANDLE cspHandle, const CSSM_KEY *key, const CSSM_DATA *plainText, CSSM_DATA_PTR cipherText);
+CSSM_RETURN cdsaDecrypt(CSSM_CSP_HANDLE cspHandle, const CSSM_KEY *key, const CSSM_DATA *cipherText, CSSM_DATA_PTR plainText);
     
 #ifdef    __cplusplus
 }
