@@ -19,8 +19,14 @@
         }],
         ["OS==\"mac\"", {
           "sources": [
-            "src/native/MacLauncher.cpp"
+            "src/native/MacLauncher.cpp",
+            "src/native/CDSACrypt.cpp",
+            "src/native/CDSACrypt.h"
           ],
+          "libraries": [
+            'CoreFoundation.framework',
+            'Security.framework'
+          ]
         }]
       ]
     }
