@@ -10,14 +10,14 @@ node_js:
 
 cache:
   directories:
-    - $HOME/Library/Caches/Homebrew
     - node_modules
 
-before_install:
+script: npm run build-package:mac
+
+before_deploy:
   - brew update
   - brew install p7zip
-
-script: npm run build-package:mac
+  - 7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=64m -ms=on -snl bin/trinitycore-launcher-darwin-x64.7z bin/trinitycore-launcher-darwin-x64
 
 deploy:
   provider: releases
