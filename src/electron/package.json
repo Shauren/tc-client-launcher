@@ -1,6 +1,12 @@
 {
   "name": "tc-launcher",
   "version": "1.0.1",
+  "description": "World of Warcraft client launcher with autologin feature for TrinityCore based servers",
+  "license": "MIT",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/Shauren/tc-client-launcher.git"
+  },
   "main": "main.js",
   "dependencies": {
     "command-line-args": "^4.0.7",

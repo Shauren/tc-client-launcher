@@ -8,7 +8,7 @@
     "build-native": "electron-rebuild -f && cp build/Release/tc_launcher.node dist/",
     "build-all-dev": "npm run build && npm run build-electron && npm run build-native",
     "electron": "electron --remote-debugging-port=9222 dist/main.js",
-    "install-electron-deps": "pushd dist && npm install && popd",
+    "install-electron-deps": "pushd dist && cp ../src/electron/package-lock.json ./ && npm install && popd",
     "build-package:mac": "ng build --progress=false --aot --prod --base-href . && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite --icon=src/assets/icon.icns",
     "build-package:win": "ng build --progress=false --aot --prod --base-href . && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite --icon=src/assets/icon.ico --win32metadata.CompanyName=Shauren --win32metadata.ProductName=\"TrinityCore Client Launcher\""
   },
