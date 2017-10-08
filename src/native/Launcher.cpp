@@ -2,6 +2,7 @@
 #include <node_buffer.h>
 
 #include "LauncherShared.h"
+#include <memory>
 
 void LaunchGame(v8::FunctionCallbackInfo<v8::Value> const& args)
 {
