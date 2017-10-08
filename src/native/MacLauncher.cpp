@@ -1,5 +1,4 @@
-#include <iostream>
-#include <vector>
+#include <string>
 #include "CDSACrypt.h"
 #include "LauncherShared.h"
 
@@ -53,7 +52,7 @@ bool EncryptString(char const* string, std::vector<uint8_t>* output)
     if (!ProcessData(&inData, &encryptedData, true))
         return false;
 
-    std::copy(encryptedData.Data[0], encryptedData.Data[encryptedData.Length], std::back_inserter(*output));
+    std::copy(encryptedData.Data, encryptedData.Data + encryptedData.Length, std::back_inserter(*output));
 
     free(encryptedData.Data);
     return true;
