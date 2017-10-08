@@ -87,10 +87,14 @@ function createWindow() {
 }
 
 function setLogoutMenuVisible(visible: boolean) {
-    const windowMenuItems: Electron.MenuItem[] =
-        (<any>Menu.getApplicationMenu().items.find(menuItem => menuItem.label === 'Window')).submenu.items;
-    const logoutIndex = windowMenuItems.findIndex(menuItem => menuItem.label === 'Logout');
-    windowMenuItems[logoutIndex].visible = visible;
+    const menuItems: Electron.MenuItem[] = (<any>Menu.getApplicationMenu().items.reduce((acc, menuItem) => {
+        const submenu = (<any>menuItem).submenu;
+        return !!submenu ? acc.concat(submenu.items) : acc;
+    }, []));
+    const logoutIndex = menuItems.findIndex(menuItem => menuItem.label === 'Logout');
+    if (logoutIndex !== -1) {
+        menuItems[logoutIndex].visible = visible;
+    }
 }
 
 function createMenu() {
