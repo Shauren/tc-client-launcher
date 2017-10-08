@@ -3,6 +3,7 @@
 
 #include "LauncherShared.h"
 #include <memory>
+#include <string>
 
 void LaunchGame(v8::FunctionCallbackInfo<v8::Value> const& args)
 {

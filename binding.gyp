@@ -26,7 +26,12 @@
           "libraries": [
             'CoreFoundation.framework',
             'Security.framework'
-          ]
+          ],
+          "xcode_settings": {
+            "OTHER_CFLAGS": [
+              "-std=c++14"
+            ],
+          }
         }]
       ]
     }

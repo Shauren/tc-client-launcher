@@ -10,9 +10,11 @@ node_js:
 
 cache:
   directories:
+    - $HOME/Library/Caches/Homebrew
     - node_modules
 
 before_install:
+  - brew update
   - brew install p7zip
 
 script: npm run build-package:mac
