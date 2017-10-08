@@ -35,8 +35,11 @@ export class LoaderComponent implements OnInit {
 
     private getInitialRoute(): Observable<string> {
         if (this.loginTicket.shouldAttemptRememberedLogin()) {
-            this.logger.log(`Loader | Found remembered login`);
-            return this.loginTicket.refresh()
+            return this.loginTicket.restoreSavedTicket()
+                .flatMap(() => {
+                    this.logger.log(`Loader | Found remembered login`);
+                    return this.loginTicket.refresh();
+                })
                 .catch<LoginRefreshResult, LoginRefreshResult>(() => {
                     this.logger.error(`Loader | Error checking remembered login`);
                     return Observable.of({ is_expired: true });

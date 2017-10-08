@@ -3,10 +3,12 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/takeUntil';
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { ElectronService } from 'ngx-electron';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
+import { CryptoResult } from '../electron/crypto-result';
 import { ConfigurationService } from './configuration.service';
 import { LoginRefreshResult } from './login-refresh-result';
 
@@ -15,16 +17,14 @@ export class LoginTicketService implements OnDestroy {
 
     private ticketRefreshEndSignal = new Subject<void>();
 
-    static getTicket(rememberLogin: boolean): string {
-        if (rememberLogin) {
-            return localStorage.getItem('ticket');
-        } else {
-            return sessionStorage.getItem('ticket');
-        }
+    static getTicket(): string {
+        return sessionStorage.getItem('ticket');
     }
 
     constructor(
         private configuration: ConfigurationService,
+        private electron: ElectronService,
+        private zone: NgZone,
         private http: HttpClient) {
     }
 
@@ -34,25 +34,26 @@ export class LoginTicketService implements OnDestroy {
     }
 
     getTicket(): string {
-        return LoginTicketService.getTicket(this.configuration.RememberLogin);
+        return LoginTicketService.getTicket();
     }
 
     store(loginTicket: string, rememberLogin: boolean): void {
         this.configuration.RememberLogin = rememberLogin;
+        sessionStorage.setItem('ticket', loginTicket);
         if (rememberLogin) {
-            localStorage.setItem('ticket', loginTicket);
-        } else {
-            sessionStorage.setItem('ticket', loginTicket);
+            this.electron.ipcRenderer.once('encrypt', (event, args: CryptoResult) => {
+                if (args.success) {
+                    localStorage.setItem('ticket', args.output);
+                }
+            });
+            this.electron.ipcRenderer.send('encrypt', loginTicket);
         }
         this.scheduleNextRefresh(new Date().getTime() / 1000 + 900);
     }
 
     clear(): void {
-        if (this.configuration.RememberLogin) {
-            localStorage.removeItem('ticket');
-        } else {
-            sessionStorage.removeItem('ticket');
-        }
+        sessionStorage.removeItem('ticket');
+        localStorage.removeItem('ticket');
         this.ticketRefreshEndSignal.next();
     }
 
@@ -76,5 +77,22 @@ export class LoginTicketService implements OnDestroy {
 
     shouldAttemptRememberedLogin(): boolean {
         return this.configuration.RememberLogin && !!localStorage.getItem('ticket');
+    }
+
+    restoreSavedTicket(): Observable<void> {
+        return new Observable<void>(subscriber => {
+            this.electron.ipcRenderer.once('decrypt', (event: Electron.Event, args: CryptoResult) => {
+                this.zone.runGuarded(() => {
+                    if (args.success) {
+                        sessionStorage.setItem('ticket', args.output);
+                        subscriber.next();
+                        subscriber.complete();
+                    } else {
+                        subscriber.error();
+                    }
+                });
+            });
+            this.electron.ipcRenderer.send('decrypt', localStorage.getItem('ticket'));
+        });
     }
 }

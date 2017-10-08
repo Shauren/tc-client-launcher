@@ -3,6 +3,7 @@ import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import * as electronSettings from 'electron-settings';
 
 import { Configuration, getDefaultConfiguration } from './configuration';
+import { CryptoResult } from './crypto-result';
 import { LaunchArgs } from './launch-args';
 import { Logger } from './logger';
 import { MainLogger } from './main-logger';
@@ -168,6 +169,27 @@ function createMenu() {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
+function setupCrypto() {
+    ipcMain.on('encrypt', (event: Electron.Event, args: string) => {
+        try {
+            const result = nativeLauncher.encryptString(args);
+            event.sender.send('encrypt', new CryptoResult(true, result.toString('base64')));
+        } catch (e) {
+            logger.error(`Crypto | Failed to encrypt string: ${(e as Error).message}`);
+            event.sender.send('encrypt', new CryptoResult(false));
+        }
+    });
+    ipcMain.on('decrypt', (event: Electron.Event, args: string) => {
+        try {
+            const result = nativeLauncher.decryptString(Buffer.from(args, 'base64'));
+            event.sender.send('decrypt', new CryptoResult(true, result));
+        } catch (e) {
+            logger.error(`Crypto | Failed to decrypt string: ${(e as Error).message}`);
+            event.sender.send('decrypt', new CryptoResult(false));
+        }
+    });
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -181,6 +203,8 @@ app.on('ready', () => {
     createWindow();
 
     createMenu();
+
+    setupCrypto();
 
     ipcMain.on('open-directory-selection', (event: Electron.Event) => {
         event.sender.send('directory-selected', dialog.showOpenDialog(applicationWindow, { properties: ['openDirectory'] }));

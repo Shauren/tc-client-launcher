@@ -53,9 +53,6 @@ export class MainLogger extends Logger {
     }
 
     private resolveLogFunction(fn: keyof Console): (message?: any, ...optionalParams: any[]) => void {
-        if (Math.random() > 1 /*environment.production*/) {
-            return () => { };
-        }
         return function () {
             (this as MainLogger).queueMessage(
                 Array.prototype.map.call(arguments, arg =>
