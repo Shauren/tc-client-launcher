@@ -3,7 +3,7 @@
 ## Build
 
 Run `npm run build-all-dev` to build the project. The build artifacts will be stored in the `dist/` directory.
-Use the `npm run build-package:{OS}` for a production build (currently only `win` is supported).
+Use the `npm run build-package:{OS}` for a production build (`win` or `mac`).
 
 ## VSCode debug configurations
 
