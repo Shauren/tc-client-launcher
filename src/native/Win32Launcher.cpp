@@ -74,13 +74,13 @@ bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* g
     return true;
 }
 
-bool LaunchGameWithLogin(char const* gameInstallDir, bool use64Bit)
+bool LaunchGameWithLogin(char const* gameInstallDir)
 {
     char commandLine[32768] = {};
     strcat(commandLine, gameInstallDir);
     strcat(commandLine, "\\");
-    strcat(commandLine, use64Bit ? "Wow-64_Patched.exe" : "Wow_Patched.exe");
-    strcat(commandLine, " -launcherlogin -noautolaunch64bit");
+    strcat(commandLine, "Wow.exe");
+    strcat(commandLine, " -launcherlogin");
 
     STARTUPINFOA startupInfo{sizeof(STARTUPINFOA)};
     PROCESS_INFORMATION processInfo;

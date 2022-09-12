@@ -58,8 +58,7 @@ export class SettingsDialogComponent implements OnChanges {
                 this.logger.log('Settings | Opening configuration form');
                 this.settingsForm.setValue({
                     loginServerUrl: this.configurationService.LoginServerUrl,
-                    gameInstallDir: this.configurationService.WowInstallDir,
-                    use64bit: this.configurationService.Use64Bit
+                    gameInstallDir: this.configurationService.WowInstallDir
                 });
                 this.displayMask = true;
             } else {
@@ -73,18 +72,16 @@ export class SettingsDialogComponent implements OnChanges {
     }
 
     saveConfiguration(): void {
-        const { loginServerUrl, use64bit } = this.settingsForm.value;
+        const { loginServerUrl } = this.settingsForm.value;
         // disabled controls don't write to .value
         const gameInstallDir = this.settingsForm.controls['gameInstallDir'].value;
 
         this.logger.log(`Settings | Saving new configuration: { ` +
             `LoginServerUrl: '${loginServerUrl}', ` +
-            `WowInstallDir: '${gameInstallDir}', ` +
-            `Use64Bit: ${use64bit} }`);
+            `WowInstallDir: '${gameInstallDir}' }`);
 
         this.configurationService.LoginServerUrl = loginServerUrl;
         this.configurationService.WowInstallDir = gameInstallDir;
-        this.configurationService.Use64Bit = use64bit;
         this.displayChange.emit(false);
     }
 

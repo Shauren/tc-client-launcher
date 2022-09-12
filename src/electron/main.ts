@@ -224,7 +224,6 @@ app.on('ready', () => {
     ipcMain.on('launcher', (event: Electron.Event, args: LaunchArgs) => {
         nativeLauncher.launchGame(
             configuration.WowInstallDir,
-            configuration.Use64Bit,
             args.Portal,
             args.LoginTicket,
             args.GameAccount);

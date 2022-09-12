@@ -27,14 +27,6 @@ export class ConfigurationService implements OnDestroy {
         this.electronService.ipcRenderer.send('configuration', ['WowInstallDir', wowInstallDir]);
     }
 
-    get Use64Bit(): boolean {
-        return this.settingsCache.Use64Bit;
-    }
-
-    set Use64Bit(use64Bit: boolean) {
-        this.electronService.ipcRenderer.send('configuration', ['Use64Bit', use64Bit]);
-    }
-
     get LoginServerUrl(): string {
         return this.settingsCache.LoginServerUrl;
     }
