@@ -4,7 +4,7 @@ import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@a
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { Logger } from '../electron/logger';
+import { Logger } from '../desktop-app/logger';
 
 @Injectable()
 export class PortalResolver implements Resolve<string> {

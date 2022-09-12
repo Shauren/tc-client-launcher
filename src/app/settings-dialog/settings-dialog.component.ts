@@ -14,7 +14,7 @@ import {
 import { NgForm } from '@angular/forms';
 import { ElectronService } from 'ngx-electron';
 
-import { Logger } from '../../electron/logger';
+import { Logger } from '../../desktop-app/logger';
 import { ConfigurationService } from '../configuration.service';
 
 @Component({

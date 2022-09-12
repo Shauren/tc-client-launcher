@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
 
-import { Logger } from '../electron/logger';
+import { Logger } from '../desktop-app/logger';
 import { AccountComponent } from './account/account.component';
 import { AccountService } from './account/account.service';
 import { GameAccountResolver } from './account/game-account.resolver';

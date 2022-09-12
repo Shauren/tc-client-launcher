@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { Logger } from '../electron/logger';
+import { Logger } from '../desktop-app/logger';
 
 @Injectable()
 export class LoggingHttpInterceptor implements HttpInterceptor {

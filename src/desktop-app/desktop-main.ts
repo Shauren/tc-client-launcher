@@ -38,8 +38,8 @@ function initializeLogging() {
 }
 
 function loadConfig() {
-    configuration = Object.assign(getDefaultConfiguration(), electronSettings.getAll());
-    electronSettings.setAll(<any>configuration);
+    configuration = Object.assign(getDefaultConfiguration(), electronSettings.getSync());
+    electronSettings.setSync(<any>configuration);
 
     ipcMain.on('init-configuration', (event) => { event.returnValue = configuration; });
     ipcMain.on('configuration', (event, args) => {
@@ -51,7 +51,7 @@ function loadConfig() {
                     configuration[args[i]] = args[i + 1];
                 }
             }
-            electronSettings.setAll(<any>configuration);
+            electronSettings.setSync(<any>configuration);
         }
         event.sender.send('configuration-response', configuration);
     });
@@ -63,11 +63,20 @@ function createWindow() {
         width: 640,
         height: 480,
         backgroundColor: '#2D2D30',
-        show: false
+        show: false,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false
+        }
     });
 
     ipcMain.once('get-argv', (event: Electron.Event) => {
-        event.returnValue = commandLine;
+        event.returnValue = {
+            ...commandLine,
+            program_platform: process.platform,
+            program_id: app.getName(),
+            program_version: app.getVersion()
+        };
     });
 
     // and load the index.html of the app.
@@ -122,7 +131,7 @@ function createMenu() {
                             applicationWindow.webContents.send('open-settings');
                         }
                     },
-                    // { role: 'toggledevtools' },
+                    // { role: 'toggleDevTools' },
                     { type: 'separator' },
                     logoutMenuItem,
                     { role: 'minimize' },
@@ -141,11 +150,11 @@ function createMenu() {
                             applicationWindow.webContents.send('open-settings');
                         }
                     },
-                    // { role: 'toggledevtools' },
+                    // { role: 'toggleDevTools' },
                     { type: 'separator' },
                     logoutMenuItem,
                     { role: 'hide' },
-                    { role: 'hideothers' },
+                    { role: 'hideOthers' },
                     { role: 'unhide' },
                     { type: 'separator' },
                     { role: 'quit' }
@@ -161,9 +170,9 @@ function createMenu() {
                     { role: 'cut' },
                     { role: 'copy' },
                     { role: 'paste' },
-                    { role: 'pasteandmatchstyle' },
+                    { role: 'pasteAndMatchStyle' },
                     { role: 'delete' },
-                    { role: 'selectall' }
+                    { role: 'selectAll' }
                 ]
             },
             {
@@ -181,7 +190,7 @@ function createMenu() {
 }
 
 function setupCrypto() {
-    ipcMain.on('encrypt', (event: Electron.Event, args: string) => {
+    ipcMain.on('encrypt', (event: Electron.IpcMainEvent, args: string) => {
         try {
             const result = nativeLauncher.encryptString(args);
             event.sender.send('encrypt', new CryptoResult(true, result.toString('base64')));
@@ -190,7 +199,7 @@ function setupCrypto() {
             event.sender.send('encrypt', new CryptoResult(false));
         }
     });
-    ipcMain.on('decrypt', (event: Electron.Event, args: string) => {
+    ipcMain.on('decrypt', (event: Electron.IpcMainEvent, args: string) => {
         try {
             const result = nativeLauncher.decryptString(Buffer.from(args, 'base64'));
             event.sender.send('decrypt', new CryptoResult(true, result));
@@ -217,11 +226,11 @@ app.on('ready', () => {
 
     setupCrypto();
 
-    ipcMain.on('open-directory-selection', (event: Electron.Event) => {
+    ipcMain.on('open-directory-selection', (event: Electron.IpcMainEvent) => {
         event.sender.send('directory-selected', dialog.showOpenDialog(applicationWindow, { properties: ['openDirectory'] }));
     });
 
-    ipcMain.on('launcher', (event: Electron.Event, args: LaunchArgs) => {
+    ipcMain.on('launcher', (event: Electron.IpcMainEvent, args: LaunchArgs) => {
         nativeLauncher.launchGame(
             configuration.WowInstallDir,
             args.Portal,

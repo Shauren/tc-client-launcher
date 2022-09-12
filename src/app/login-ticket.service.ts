@@ -4,7 +4,7 @@ import { ElectronService } from 'ngx-electron';
 import { Observable, Subject, timer } from 'rxjs';
 import { mergeMap, takeUntil } from 'rxjs/operators';
 
-import { CryptoResult } from '../electron/crypto-result';
+import { CryptoResult } from '../desktop-app/crypto-result';
 import { ConfigurationService } from './configuration.service';
 import { LoginRefreshResult } from './login-refresh-result';
 

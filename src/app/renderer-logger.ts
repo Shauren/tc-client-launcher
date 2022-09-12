@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 
-import { LogEvent, Logger } from '../electron/logger';
+import { LogEvent, Logger } from '../desktop-app/logger';
 import { environment } from '../environments/environment';
 import { Argv } from './argv';
 

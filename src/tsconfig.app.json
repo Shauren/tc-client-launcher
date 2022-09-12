@@ -3,11 +3,10 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
-    "module": "es5",
     "types": []
   },
   "exclude": [
-    "electron/**",
+    "desktop-app/**",
     "test.ts",
     "**/*.spec.ts"
   ]

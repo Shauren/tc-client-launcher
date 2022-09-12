@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { Logger } from '../../electron/logger';
+import { Logger } from '../../desktop-app/logger';
 import { AccountService } from './account.service';
 import { GameAccountList } from './game-account-info';
 

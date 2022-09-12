@@ -13,11 +13,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/tc-launcher",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
+            "baseHref": ".",
             "aot": true,
             "assets": [
               "src/favicon.ico",
@@ -43,6 +44,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "progress": false,
               "budgets": [
                 {
                   "type": "initial",
@@ -71,5 +73,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

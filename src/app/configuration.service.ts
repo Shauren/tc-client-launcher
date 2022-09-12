@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 
-import { Configuration } from '../electron/configuration';
+import { Configuration } from '../desktop-app/configuration';
 
 @Injectable()
 export class ConfigurationService implements OnDestroy {

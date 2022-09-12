@@ -4,8 +4,8 @@ import { ElectronService } from 'ngx-electron';
 import { timer, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { LaunchArgs } from '../../electron/launch-args';
-import { Logger } from '../../electron/logger';
+import { LaunchArgs } from '../../desktop-app/launch-args';
+import { Logger } from '../../desktop-app/logger';
 import { ConfigurationService } from '../configuration.service';
 import { LoginTicketService } from '../login-ticket.service';
 import { GameAccountInfo, GameAccountList } from './game-account-info';
@@ -100,7 +100,9 @@ export class AccountComponent implements OnInit, OnDestroy {
     }
 
     formatBanExpirationTime(expirationUnixTimestamp: number): string {
-        const options = { day: 'numeric', month: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' };
+        const options: Intl.DateTimeFormatOptions = {
+            day: 'numeric', month: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'
+        };
         return new Date(expirationUnixTimestamp * 1000).toLocaleString([], options);
     }
 }

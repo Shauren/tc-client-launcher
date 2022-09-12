@@ -1,11 +1,11 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ElectronService } from 'ngx-electron';
 
-import { Logger } from '../../electron/logger';
+import { Logger } from '../../desktop-app/logger';
 import { ConfigurationService } from '../configuration.service';
 import { LoginTicketService } from '../login-ticket.service';
+import { Argv } from '../argv';
 import { FormInput } from './form-inputs';
 import { FormInputValue, LoginForm } from './login-form';
 import { AuthenticationState } from './login-result';
@@ -29,12 +29,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
     constructor(
         private loginService: LoginService,
         private loginTicket: LoginTicketService,
-        private electron: ElectronService,
         private configuration: ConfigurationService,
         private route: ActivatedRoute,
         private router: Router,
         private changeDetector: ChangeDetectorRef,
-        private logger: Logger) {
+        private logger: Logger,
+        private argv: Argv) {
     }
 
     ngOnInit(): void {
@@ -52,9 +52,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     login(): void {
         const form = new LoginForm();
-        form.platform_id = this.electron.process.platform;
-        form.program_id = this.electron.remote.app.getName();
-        form.version = this.electron.remote.app.getVersion();
+        form.platform_id = this.argv['program_platform'];
+        form.program_id = this.argv['program_id'];
+        form.version = this.argv['program_version'];
         form.inputs = Object.keys(this.loginForm.value).map(inputId => {
             const value = new FormInputValue();
             value.input_id = inputId;

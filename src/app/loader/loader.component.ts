@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap } from 'rxjs/operators';
 
-import { Logger } from '../../electron/logger';
+import { Logger } from '../../desktop-app/logger';
 import { LoginTicketService } from '../login-ticket.service';
 import { LoginService } from '../login/login.service';
 
