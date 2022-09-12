@@ -3,6 +3,7 @@
 #define LauncherShared_h__
 
 #include <vector>
+#include <string>
 #include <cstdint>
 
 bool EncryptString(char const* string, std::vector<uint8_t>* output);

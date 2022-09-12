@@ -10,7 +10,7 @@ void LaunchGame(v8::FunctionCallbackInfo<v8::Value> const& args)
     v8::Isolate* isolate = args.GetIsolate();
     v8::HandleScope scope(isolate);
 
-    if (args.Length() < 5)
+    if (args.Length() < 4)
     {
         isolate->ThrowException(v8::Exception::TypeError(v8::String::NewFromUtf8(isolate, "Wrong number of arguments, expected 5")));
         return;
@@ -23,10 +23,10 @@ void LaunchGame(v8::FunctionCallbackInfo<v8::Value> const& args)
         return;
     }
 
-    v8::String::Utf8Value gameInstallDir(args[0]->ToString(isolate));
-    v8::String::Utf8Value portal(args[2]->ToString(isolate));
-    v8::String::Utf8Value loginTicket(args[3]->ToString(isolate));
-    v8::String::Utf8Value gameAccount(args[4]->ToString(isolate));
+    v8::String::Utf8Value gameInstallDir(isolate,  args[0]->ToString(isolate));
+    v8::String::Utf8Value portal(isolate, args[1]->ToString(isolate));
+    v8::String::Utf8Value loginTicket(isolate, args[2]->ToString(isolate));
+    v8::String::Utf8Value gameAccount(isolate, args[3]->ToString(isolate));
 
     bool success = false;
     if (StoreLoginTicket(*portal, *loginTicket, *gameAccount))
@@ -54,7 +54,7 @@ void EncryptJsString(v8::FunctionCallbackInfo<v8::Value> const& args)
         return;
     }
 
-    v8::String::Utf8Value inputString(args[0]->ToString(isolate));
+    v8::String::Utf8Value inputString(isolate, args[0]->ToString(isolate));
     std::unique_ptr<std::vector<uint8_t>> encryptedString = std::make_unique<std::vector<uint8_t>>();
 
     if (!EncryptString(*inputString, encryptedString.get()))
@@ -109,11 +109,17 @@ void DecryptJsString(v8::FunctionCallbackInfo<v8::Value> const& args)
         isolate->ThrowException(v8::Exception::TypeError(v8::String::NewFromUtf8(isolate, "Output string creation failed")));
 }
 
-void Init(v8::Handle<v8::Object> exports)
+NODE_MODULE_INIT(/*exports, module, context*/)
 {
-    NODE_SET_METHOD(exports, "launchGame", LaunchGame);
-    NODE_SET_METHOD(exports, "encryptString", EncryptJsString);
-    NODE_SET_METHOD(exports, "decryptString", DecryptJsString);
-}
+    auto setExport = [&](char const* name, v8::FunctionCallback callback)
+    {
+        v8::Isolate* isolate = context->GetIsolate();
+        exports->Set(context,
+            v8::String::NewFromUtf8(isolate, name, v8::NewStringType::kInternalized).ToLocalChecked(),
+            v8::FunctionTemplate::New(isolate, callback)->GetFunction(context).ToLocalChecked()).Check();
+    };
 
-NODE_MODULE(tc_launcher, Init)
+    setExport("launchGame", LaunchGame);
+    setExport("encryptString", EncryptJsString);
+    setExport("decryptString", DecryptJsString);
+}
