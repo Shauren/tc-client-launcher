@@ -41,7 +41,7 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
         HttpClientModule,
         BrowserModule,
         BrowserAnimationsModule,
-        RouterModule.forRoot(routes),
+        RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
         NgxElectronModule
     ],
     providers: [
