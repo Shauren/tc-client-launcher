@@ -53,7 +53,7 @@ bool DecryptString(std::vector<uint8_t> const& encryptedString, std::string* out
 bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* gameAccount)
 {
     HKEY launcherKey;
-    if (RegCreateKeyExA(HKEY_CURRENT_USER, R"(Software\TrinityCore Developers\Battle.net\Launch Options\WoW)", 0, nullptr, 0, KEY_WRITE, nullptr, &launcherKey, nullptr) != ERROR_SUCCESS)
+    if (RegCreateKeyExA(HKEY_CURRENT_USER, R"(Software\Custom Game Server Dev\Battle.net\Launch Options\WoW)", 0, nullptr, 0, KEY_WRITE, nullptr, &launcherKey, nullptr) != ERROR_SUCCESS)
         return false;
 
     std::unique_ptr<HKEY, RegCloseKeyDeleter> handle(launcherKey);
@@ -79,8 +79,8 @@ bool LaunchGameWithLogin(char const* gameInstallDir)
     char commandLine[32768] = {};
     strcat(commandLine, gameInstallDir);
     strcat(commandLine, "\\");
-    strcat(commandLine, "Wow.exe");
-    strcat(commandLine, " -launcherlogin");
+    strcat(commandLine, R"("Arctium WoW Launcher.exe")");
+    strcat(commandLine, " -launcherlogin -Config Config2.wtf");
 
     STARTUPINFOA startupInfo{sizeof(STARTUPINFOA)};
     PROCESS_INFORMATION processInfo;
