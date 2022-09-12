@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -6,6 +7,7 @@ import { Logger } from '../../electron/logger';
 import { FormInputs } from './form-inputs';
 import { LoginService } from './login.service';
 
+@Injectable()
 export class LoginFormResolver implements Resolve<FormInputs> {
 
     constructor(
