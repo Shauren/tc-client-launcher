@@ -35,7 +35,7 @@
     "@angular/language-service": "^8.2.14",
     "@types/command-line-args": "^4.0.1",
     "@types/electron-settings": "^3.0.0",
-    "@types/node": "~16.11.58",
+    "@types/node": "~11.15.54",
     "codelyzer": "^5.0.0",
     "electron": "^1.7.6",
     "electron-packager": "^9.1.0",

@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     rememberLogin: boolean;
     loginError: string;
 
-    @ViewChild('loginForm')
+    @ViewChild('loginForm', { static: true })
     loginForm: NgForm;
 
     constructor(

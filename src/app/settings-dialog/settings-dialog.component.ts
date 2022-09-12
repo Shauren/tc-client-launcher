@@ -39,7 +39,7 @@ export class SettingsDialogComponent implements OnChanges {
     @Output()
     displayChange = new EventEmitter<boolean>();
 
-    @ViewChild('settingsForm')
+    @ViewChild('settingsForm', { static: true })
     settingsForm: NgForm;
 
     displayMask = false;
