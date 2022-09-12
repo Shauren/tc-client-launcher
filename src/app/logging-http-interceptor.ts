@@ -1,9 +1,8 @@
-import 'rxjs/add/operator/do';
-
 import { HttpErrorResponse, HttpInterceptor } from '@angular/common/http';
 import { HttpEvent, HttpEventType, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { Logger } from '../electron/logger';
 
@@ -16,7 +15,7 @@ export class LoggingHttpInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.logger.log(`Http | ${req.method} (begin) - ${req.url}`);
         const start = Date.now();
-        return next.handle(req).do({
+        return next.handle(req).pipe(tap({
             next: (event: HttpEvent<any>) => {
                 if (event.type === HttpEventType.Response) {
                     const duration = Date.now() - start;
@@ -31,6 +30,6 @@ export class LoggingHttpInterceptor implements HttpInterceptor {
                     this.logger.error(`Http | ${req.method} (error) - ${error.url} - ${error.statusText} - took ${duration}ms`);
                 }
             }
-        });
+        }));
     }
 }

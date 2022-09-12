@@ -1,11 +1,8 @@
-import 'rxjs/add/observable/timer';
-import 'rxjs/add/operator/takeUntil';
-
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { timer, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { LaunchArgs } from '../../electron/launch-args';
 import { Logger } from '../../electron/logger';
@@ -20,7 +17,10 @@ const ExpansionNames = [
     'Cataclysm',
     'Mists of Pandaria',
     'Warlords of Draenor',
-    'Legion'
+    'Legion',
+    'Battle for Azeroth',
+    'Shadowlands',
+    'Dragonflight'
 ];
 
 const NO_GAME_ACCOUNT: GameAccountInfo = {
@@ -84,7 +84,7 @@ export class AccountComponent implements OnInit, OnDestroy {
         this.configuration.LastGameAccount = this.selectedGameAccount.display_name;
         this.logger.log(`Account | Launching game with account ${launchArgs.GameAccount} and portal ${launchArgs.Portal}`);
         this.hasRecentlyLaunched = true;
-        Observable.timer(5000).takeUntil(this.destroyed).subscribe(() => {
+        timer(5000).pipe(takeUntil(this.destroyed)).subscribe(() => {
             this.logger.log('Account | Re-enabling launch button');
             this.hasRecentlyLaunched = false;
             this.changeDetector.markForCheck();

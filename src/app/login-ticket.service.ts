@@ -1,12 +1,8 @@
-import 'rxjs/add/observable/timer';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/takeUntil';
-
 import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Observable, Subject, timer } from 'rxjs';
+import { mergeMap, takeUntil } from 'rxjs/operators';
 
 import { CryptoResult } from '../electron/crypto-result';
 import { ConfigurationService } from './configuration.service';
@@ -62,10 +58,9 @@ export class LoginTicketService implements OnDestroy {
     }
 
     private scheduleNextRefresh(newLoginTicketExpiry: number): void {
-        Observable
-            .timer((newLoginTicketExpiry * 1000 - new Date().getTime()) / 2)
-            .takeUntil(this.ticketRefreshEndSignal)
-            .flatMap(() => this.refresh())
+        timer((newLoginTicketExpiry * 1000 - new Date().getTime()) / 2).pipe(
+            takeUntil(this.ticketRefreshEndSignal),
+            mergeMap(() => this.refresh()))
             .subscribe(r => {
                 if (!r.is_expired) {
                     this.scheduleNextRefresh(r.login_ticket_expiry);

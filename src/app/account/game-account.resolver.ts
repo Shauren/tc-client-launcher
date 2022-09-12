@@ -1,9 +1,7 @@
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/catch';
-
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { Logger } from '../../electron/logger';
 import { AccountService } from './account.service';
@@ -19,9 +17,9 @@ export class GameAccountResolver implements Resolve<GameAccountList> {
 
     resolve(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<GameAccountList> {
         this.logger.log('Account | Retrieving game account list');
-        return this.accountService.getGameAccounts().catch(error => {
+        return this.accountService.getGameAccounts().pipe(catchError(error => {
             this.logger.error('Account | Failed to retrieve game account list!', error);
-            return Observable.of<GameAccountList>({ game_accounts: [] });
-        });
+            return of<GameAccountList>({ game_accounts: [] });
+        }));
     }
 }
