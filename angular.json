@@ -70,6 +70,6 @@
           }
         }
       }
-    }},
-  "defaultProject": "tc-launcher"
+    }
+  }
 }
