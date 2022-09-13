@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 import { Observable, Subject, timer } from 'rxjs';
 import { mergeMap, takeUntil } from 'rxjs/operators';
 
-import { CryptoResult } from '../desktop-app/crypto-result';
 import { ConfigurationService } from './configuration.service';
 import { LoginRefreshResult } from './login-refresh-result';
 
@@ -19,7 +17,6 @@ export class LoginTicketService implements OnDestroy {
 
     constructor(
         private configuration: ConfigurationService,
-        private electron: ElectronService,
         private zone: NgZone,
         private http: HttpClient) {
     }
@@ -37,12 +34,11 @@ export class LoginTicketService implements OnDestroy {
         this.configuration.RememberLogin = rememberLogin;
         sessionStorage.setItem('ticket', loginTicket);
         if (rememberLogin) {
-            this.electron.ipcRenderer.once('encrypt', (event, args: CryptoResult) => {
-                if (args.success) {
-                    localStorage.setItem('ticket', args.output);
+            window.electronAPI.encrypt(loginTicket).then(result => {
+                if (result.success) {
+                    localStorage.setItem('ticket', result.output);
                 }
             });
-            this.electron.ipcRenderer.send('encrypt', loginTicket);
         }
         this.scheduleNextRefresh(new Date().getTime() / 1000 + 900);
     }
@@ -76,10 +72,10 @@ export class LoginTicketService implements OnDestroy {
 
     restoreSavedTicket(): Observable<void> {
         return new Observable<void>(subscriber => {
-            this.electron.ipcRenderer.once('decrypt', (event: Electron.Event, args: CryptoResult) => {
+            window.electronAPI.decrypt(localStorage.getItem('ticket')).then(result => {
                 this.zone.runGuarded(() => {
-                    if (args.success) {
-                        sessionStorage.setItem('ticket', args.output);
+                    if (result.success) {
+                        sessionStorage.setItem('ticket', result.output);
                         subscriber.next();
                         subscriber.complete();
                     } else {
@@ -87,7 +83,6 @@ export class LoginTicketService implements OnDestroy {
                     }
                 });
             });
-            this.electron.ipcRenderer.send('decrypt', localStorage.getItem('ticket'));
         });
     }
 }

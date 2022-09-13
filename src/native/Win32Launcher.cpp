@@ -77,9 +77,10 @@ bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* g
 bool LaunchGameWithLogin(char const* gameInstallDir)
 {
     char commandLine[32768] = {};
+    strcat(commandLine, "\"");
     strcat(commandLine, gameInstallDir);
     strcat(commandLine, "\\");
-    strcat(commandLine, R"("Arctium WoW Launcher.exe")");
+    strcat(commandLine, "Arctium WoW Launcher.exe\"");
     strcat(commandLine, " -launcherlogin -Config Config2.wtf");
 
     STARTUPINFOA startupInfo{sizeof(STARTUPINFOA)};

@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ElectronService } from 'ngx-electron';
 import { timer, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { LaunchArgs } from '../../desktop-app/launch-args';
+import { LaunchArgs } from '../../ipc/launch-args';
 import { Logger } from '../../desktop-app/logger';
 import { ConfigurationService } from '../configuration.service';
 import { LoginTicketService } from '../login-ticket.service';
@@ -50,7 +49,6 @@ export class AccountComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private loginTicket: LoginTicketService,
-        private electronService: ElectronService,
         private configuration: ConfigurationService,
         private changeDetector: ChangeDetectorRef,
         private logger: Logger) {
@@ -65,7 +63,7 @@ export class AccountComponent implements OnInit, OnDestroy {
             this.gameAccounts = [NO_GAME_ACCOUNT];
         }
         this.selectedGameAccount = lastAccount || this.gameAccounts[0];
-        this.electronService.ipcRenderer.send('login');
+        window.electronAPI.login();
         this.logger.log('Account | Initialized account view', this.gameAccounts.map(gameAccount => gameAccount.display_name),
             `last selected game account: ${lastAccount ? lastAccount.display_name : 'none'}`);
     }
@@ -76,11 +74,12 @@ export class AccountComponent implements OnInit, OnDestroy {
     }
 
     launch(): void {
-        const launchArgs = new LaunchArgs();
-        launchArgs.Portal = this.route.snapshot.data['portal'];
-        launchArgs.LoginTicket = this.loginTicket.getTicket();
-        launchArgs.GameAccount = this.selectedGameAccount.display_name;
-        this.electronService.ipcRenderer.send('launcher', launchArgs);
+        const launchArgs: LaunchArgs = {
+            Portal: this.route.snapshot.data['portal'],
+            LoginTicket: this.loginTicket.getTicket(),
+            GameAccount: this.selectedGameAccount.display_name
+        };
+        window.electronAPI.launchGame(launchArgs);
         this.configuration.LastGameAccount = this.selectedGameAccount.display_name;
         this.logger.log(`Account | Launching game with account ${launchArgs.GameAccount} and portal ${launchArgs.Portal}`);
         this.hasRecentlyLaunched = true;

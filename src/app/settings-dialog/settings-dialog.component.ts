@@ -12,7 +12,6 @@ import {
     ViewChild
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ElectronService } from 'ngx-electron';
 
 import { Logger } from '../../desktop-app/logger';
 import { ConfigurationService } from '../configuration.service';
@@ -46,7 +45,6 @@ export class SettingsDialogComponent implements OnChanges {
 
     constructor(
         private configurationService: ConfigurationService,
-        private electron: ElectronService,
         private zone: NgZone,
         private changeDetector: ChangeDetectorRef,
         private logger: Logger) {
@@ -92,14 +90,13 @@ export class SettingsDialogComponent implements OnChanges {
 
     openDirectoryPicker(): void {
         this.logger.log('Settings | Opening directory picker for WowInstallDir');
-        this.electron.ipcRenderer.once('directory-selected', (event: Electron.Event, dir: string[]) => {
-            if (dir != undefined) {
-                this.logger.log(`Settings | New WowInstallDir selected: ${dir[0]}.`);
-                this.zone.runGuarded(() => this.settingsForm.controls['gameInstallDir'].setValue(dir[0]));
+        window.electronAPI.selectDirectory().then(result => {
+            if (result.filePaths != undefined && !result.canceled) {
+                this.logger.log(`Settings | New WowInstallDir selected: ${result.filePaths[0]}.`);
+                this.zone.runGuarded(() => this.settingsForm.controls['gameInstallDir'].setValue(result.filePaths[0]));
             } else {
                 this.logger.log('Settings | Closed directory picker without selection');
             }
         });
-        this.electron.ipcRenderer.send('open-directory-selection');
     }
 }

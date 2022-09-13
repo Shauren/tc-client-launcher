@@ -7,11 +7,10 @@
     "build-electron": "tsc -p src/desktop-app --outDir dist/ && cp src/desktop-app/package.json dist/",
     "build-native": "electron-rebuild -f && cp build/Release/tc_launcher.node dist/",
     "build-all-dev": "npm run build && npm run build-electron && npm run build-native",
-    "electron": "electron --remote-debugging-port=9222 dist/desktop-main.js",
+    "electron": "electron --remote-debugging-port=9222 dist/desktop-app/desktop-main.js",
     "install-electron-deps": "pushd dist && cp ../src/desktop-app/package-lock.json ./ && npm install && popd",
     "build-package:mac": "ng build --configuration production && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite --icon=src/assets/icon.icns",
-    "build-package:win": "ng build --configuration production && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite --icon=src/assets/icon.ico --win32metadata.CompanyName=Shauren --win32metadata.ProductName=\"TrinityCore Client Launcher\"",
-    "postinstall": "patch-package"
+    "build-package:win": "ng build --configuration production && npm run build-native && npm run build-electron && npm run install-electron-deps && electron-packager dist trinitycore-launcher --asar --out=bin --overwrite --icon=src/assets/icon.ico --win32metadata.CompanyName=Shauren --win32metadata.ProductName=\"TrinityCore Client Launcher\""
   },
   "gypfile": true,
   "private": true,
@@ -26,7 +25,6 @@
     "@angular/router": "^14.2.1",
     "command-line-args": "^5.2.1",
     "electron-settings": "^4.0.2",
-    "ngx-electron": "^2.2.0",
     "rxjs": "^6.6.7",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.8"
@@ -42,7 +40,6 @@
     "electron": "^20.1.3",
     "electron-packager": "^16.0.0",
     "electron-rebuild": "^3.2.9",
-    "patch-package": "^6.4.7",
     "ts-node": "~7.0.0",
     "tslint": "~6.1.0",
     "typescript": "~4.6.4"

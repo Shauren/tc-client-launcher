@@ -1,14 +1,15 @@
 import * as commandLineArgs from 'command-line-args';
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import * as electronSettings from 'electron-settings';
+import * as path from 'path';
 
-import { Configuration, getDefaultConfiguration } from './configuration';
-import { CryptoResult } from './crypto-result';
-import { LaunchArgs } from './launch-args';
+import { Configuration } from '../ipc/configuration';
+import { CryptoResult } from '../ipc/crypto-result';
+import { LaunchArgs } from '../ipc/launch-args';
 import { Logger } from './logger';
 import { MainLogger } from './main-logger';
 
-const nativeLauncher: Launcher = require('./tc_launcher.node');
+const nativeLauncher: Launcher = require('../tc_launcher.node');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -37,23 +38,30 @@ function initializeLogging() {
     }
 }
 
+function getDefaultConfiguration(): Configuration {
+    return {
+        WowInstallDir: 'C:\\Program Files (x86)\\World of Warcraft',
+        LoginServerUrl: 'https://localhost:8081/bnetserver',
+        RememberLogin: false,
+        LastGameAccount: ''
+    };
+}
+
 function loadConfig() {
     configuration = Object.assign(getDefaultConfiguration(), electronSettings.getSync());
     electronSettings.setSync(<any>configuration);
 
-    ipcMain.on('init-configuration', (event) => { event.returnValue = configuration; });
-    ipcMain.on('configuration', (event, args) => {
+    ipcMain.on('get-configuration', (event) => { event.returnValue = configuration; });
+    ipcMain.handle('configuration', <Key extends keyof Configuration>(event, args: [Key, Configuration[Key]]) => {
         if (args != undefined) {
-            for (let i = 0; i < args.length; i += 2) {
-                if (args[i + 1] == undefined) {
-                    delete configuration[args[i]];
-                } else {
-                    configuration[args[i]] = args[i + 1];
-                }
+            if (args[1] == undefined) {
+                delete configuration[args[0]];
+            } else {
+                configuration[args[0]] = args[1];
             }
             electronSettings.setSync(<any>configuration);
         }
-        event.sender.send('configuration-response', configuration);
+        return configuration;
     });
 }
 
@@ -65,8 +73,7 @@ function createWindow() {
         backgroundColor: '#2D2D30',
         show: false,
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
+            preload: path.join(__dirname, 'renderer-preload.js')
         }
     });
 
@@ -80,7 +87,7 @@ function createWindow() {
     });
 
     // and load the index.html of the app.
-    applicationWindow.loadURL(`file://${__dirname}/index.html`);
+    applicationWindow.loadFile(path.join(__dirname, '../web-app/index.html'));
 
     // Emitted when the window is closed.
     applicationWindow.on('closed', () => {
@@ -131,6 +138,13 @@ function createMenu() {
                             applicationWindow.webContents.send('open-settings');
                         }
                     },
+                    // {
+                    //     label: 'Reload',
+                    //     accelerator: 'CmdOrCtrl+R',
+                    //     click: () => {
+                    //         applicationWindow.webContents.reloadIgnoringCache();
+                    //     }
+                    // },
                     // { role: 'toggleDevTools' },
                     { type: 'separator' },
                     logoutMenuItem,
@@ -190,22 +204,22 @@ function createMenu() {
 }
 
 function setupCrypto() {
-    ipcMain.on('encrypt', (event: Electron.IpcMainEvent, args: string) => {
+    ipcMain.handle('encrypt', (event: Electron.IpcMainInvokeEvent, args: string): CryptoResult => {
         try {
             const result = nativeLauncher.encryptString(args);
-            event.sender.send('encrypt', new CryptoResult(true, result.toString('base64')));
+            return { success: true, output: result.toString('base64') };
         } catch (e) {
             logger.error(`Crypto | Failed to encrypt string: ${(e as Error).message}`);
-            event.sender.send('encrypt', new CryptoResult(false));
+            return { success: false };
         }
     });
-    ipcMain.on('decrypt', (event: Electron.IpcMainEvent, args: string) => {
+    ipcMain.handle('decrypt', (event: Electron.IpcMainInvokeEvent, args: string): CryptoResult => {
         try {
             const result = nativeLauncher.decryptString(Buffer.from(args, 'base64'));
-            event.sender.send('decrypt', new CryptoResult(true, result));
+            return { success: true, output: result };
         } catch (e) {
             logger.error(`Crypto | Failed to decrypt string: ${(e as Error).message}`);
-            event.sender.send('decrypt', new CryptoResult(false));
+            return { success: false };
         }
     });
 }
@@ -226,11 +240,11 @@ app.on('ready', () => {
 
     setupCrypto();
 
-    ipcMain.on('open-directory-selection', (event: Electron.IpcMainEvent) => {
-        event.sender.send('directory-selected', dialog.showOpenDialog(applicationWindow, { properties: ['openDirectory'] }));
+    ipcMain.handle('select-directory', (event: Electron.IpcMainEvent) => {
+        return dialog.showOpenDialog(applicationWindow, { properties: ['openDirectory'] });
     });
 
-    ipcMain.on('launcher', (event: Electron.IpcMainEvent, args: LaunchArgs) => {
+    ipcMain.on('launch-game', (event: Electron.IpcMainEvent, args: LaunchArgs) => {
         nativeLauncher.launchGame(
             configuration.WowInstallDir,
             args.Portal,

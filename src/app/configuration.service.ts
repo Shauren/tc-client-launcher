@@ -1,22 +1,14 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
+import { Injectable } from '@angular/core';
 
-import { Configuration } from '../desktop-app/configuration';
+import { Configuration } from '../ipc/configuration';
 
 @Injectable()
-export class ConfigurationService implements OnDestroy {
+export class ConfigurationService {
 
     private settingsCache: Configuration;
 
-    constructor(private electronService: ElectronService) {
-        this.settingsCache = this.electronService.ipcRenderer.sendSync('init-configuration');
-        this.electronService.ipcRenderer.on('configuration-response', (event, args) => {
-            this.settingsCache = args;
-        });
-    }
-
-    ngOnDestroy(): void {
-        this.electronService.ipcRenderer.removeAllListeners('configuration-response');
+    constructor() {
+        this.settingsCache = window.electronAPI.getConfiguration();
     }
 
     get WowInstallDir(): string {
@@ -24,7 +16,8 @@ export class ConfigurationService implements OnDestroy {
     }
 
     set WowInstallDir(wowInstallDir: string) {
-        this.electronService.ipcRenderer.send('configuration', ['WowInstallDir', wowInstallDir]);
+        window.electronAPI.setConfiguration(['WowInstallDir', wowInstallDir])
+            .then(newConfiguration => this.settingsCache = newConfiguration);
     }
 
     get LoginServerUrl(): string {
@@ -32,7 +25,8 @@ export class ConfigurationService implements OnDestroy {
     }
 
     set LoginServerUrl(loginServerUrl: string) {
-        this.electronService.ipcRenderer.send('configuration', ['LoginServerUrl', loginServerUrl]);
+        window.electronAPI.setConfiguration(['LoginServerUrl', loginServerUrl])
+            .then(newConfiguration => this.settingsCache = newConfiguration);
     }
 
     get RememberLogin(): boolean {
@@ -40,7 +34,8 @@ export class ConfigurationService implements OnDestroy {
     }
 
     set RememberLogin(rememberLogin: boolean) {
-        this.electronService.ipcRenderer.send('configuration', ['RememberLogin', rememberLogin]);
+        window.electronAPI.setConfiguration(['RememberLogin', rememberLogin])
+            .then(newConfiguration => this.settingsCache = newConfiguration);
     }
 
     get LastGameAccount(): string {
@@ -48,6 +43,7 @@ export class ConfigurationService implements OnDestroy {
     }
 
     set LastGameAccount(lastGameAccount: string) {
-        this.electronService.ipcRenderer.send('configuration', ['LastGameAccount', lastGameAccount]);
+        window.electronAPI.setConfiguration(['LastGameAccount', lastGameAccount])
+            .then(newConfiguration => this.settingsCache = newConfiguration);
     }
 }

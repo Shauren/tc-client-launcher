@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ElectronService } from 'ngx-electron';
 
 import { LoginTicketService } from '../login-ticket.service';
 
@@ -16,19 +15,18 @@ export class MainComponent implements OnInit {
     constructor(
         private zone: NgZone,
         private changeDetector: ChangeDetectorRef,
-        private electron: ElectronService,
         private router: Router,
         private loginTicket: LoginTicketService) {
     }
 
     ngOnInit(): void {
-        this.electron.ipcRenderer.on('open-settings', () => {
+        window.electronAPI.onOpenSettingsRequest(() => {
             this.zone.runGuarded(() => {
                 this.openSettings = true;
                 this.changeDetector.markForCheck();
             });
         });
-        this.electron.ipcRenderer.on('logout', () => {
+        window.electronAPI.onLogoutRequest(() => {
             this.zone.runGuarded(() => {
                 this.loginTicket.clear();
                 this.router.navigate(['/login']);

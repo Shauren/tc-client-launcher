@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { ElectronService, NgxElectronModule } from 'ngx-electron';
 
 import { Logger } from '../desktop-app/logger';
 import { AccountComponent } from './account/account.component';
@@ -41,14 +40,13 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
         HttpClientModule,
         BrowserModule,
         BrowserAnimationsModule,
-        RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
-        NgxElectronModule
+        RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: BnetserverUrlHttpInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: LoggingHttpInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
-        { provide: Argv, useFactory: argvFactory, deps: [ElectronService] },
+        { provide: Argv, useFactory: argvFactory },
         { provide: Logger, useClass: RendererLogger },
         ConfigurationService,
         LoginService,
