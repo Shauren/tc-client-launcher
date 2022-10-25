@@ -46,4 +46,13 @@ export class ConfigurationService {
         window.electronAPI.setConfiguration(['LastGameAccount', lastGameAccount])
             .then(newConfiguration => this.settingsCache = newConfiguration);
     }
+
+    get LastGameVersion(): 'Retail' | 'Classic' | 'ClassicEra' {
+        return this.settingsCache.LastGameVersion;
+    }
+
+    set LastGameVersion(lastGameAccount: 'Retail' | 'Classic' | 'ClassicEra') {
+        window.electronAPI.setConfiguration(['LastGameVersion', lastGameAccount])
+            .then(newConfiguration => this.settingsCache = newConfiguration);
+    }
 }

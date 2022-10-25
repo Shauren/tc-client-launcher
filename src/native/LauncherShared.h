@@ -9,7 +9,7 @@
 bool EncryptString(char const* string, std::vector<uint8_t>* output);
 bool DecryptString(std::vector<uint8_t> const& encryptedString, std::string* output);
 bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* gameAccount);
-bool LaunchGameWithLogin(char const* gameInstallDir);
+bool LaunchGameWithLogin(char const* gameInstallDir, char const* version);
 
 // unencrypted keys
 #define PORTAL_ADDRESS "CONNECTION_STRING"

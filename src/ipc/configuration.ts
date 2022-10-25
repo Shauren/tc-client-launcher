@@ -3,4 +3,5 @@ export interface Configuration {
     LoginServerUrl: string;
     RememberLogin: boolean;
     LastGameAccount: string;
+    LastGameVersion: 'Retail' | 'Classic' | 'ClassicEra';
 }

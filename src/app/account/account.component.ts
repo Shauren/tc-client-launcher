@@ -9,6 +9,11 @@ import { ConfigurationService } from '../configuration.service';
 import { LoginTicketService } from '../login-ticket.service';
 import { GameAccountInfo, GameAccountList } from './game-account-info';
 
+interface GameVersion {
+    display_name: string;
+    value: 'Retail' | 'Classic' | 'ClassicEra';
+}
+
 const ExpansionNames = [
     'World of Warcraft',
     'The Burning Crusade',
@@ -39,6 +44,11 @@ const NO_GAME_ACCOUNT: GameAccountInfo = {
 })
 export class AccountComponent implements OnInit, OnDestroy {
 
+    readonly gameVersions: GameVersion[] = [
+        { display_name: 'World of Warcraft', value: 'Retail' },
+        { display_name: 'Wrath of the Lich King Classic', value: 'Classic' }
+    ];
+    selectedGameVersion = this.gameVersions[0];
     gameAccounts: GameAccountInfo[] = [];
     selectedGameAccount: GameAccountInfo;
     noGameAccounts: boolean;
@@ -55,6 +65,8 @@ export class AccountComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        const lastGameVersion = this.gameVersions.find(gameVersion => gameVersion.value === this.configuration.LastGameVersion);
+        this.selectedGameVersion = lastGameVersion || this.gameVersions[0];
         const gameAccounts = <GameAccountList>this.route.snapshot.data['gameAccounts'];
         this.gameAccounts = gameAccounts.game_accounts || [];
         this.noGameAccounts = this.gameAccounts.length === 0;
@@ -77,11 +89,13 @@ export class AccountComponent implements OnInit, OnDestroy {
         const launchArgs: LaunchArgs = {
             Portal: this.route.snapshot.data['portal'],
             LoginTicket: this.loginTicket.getTicket(),
-            GameAccount: this.selectedGameAccount.display_name
+            GameAccount: this.selectedGameAccount.display_name,
+            GameVersion: this.selectedGameVersion.value
         };
         window.electronAPI.launchGame(launchArgs);
+        this.configuration.LastGameVersion = this.selectedGameVersion.value;
         this.configuration.LastGameAccount = this.selectedGameAccount.display_name;
-        this.logger.log(`Account | Launching game with account ${launchArgs.GameAccount} and portal ${launchArgs.Portal}`);
+        this.logger.log(`Account | Launching game ${launchArgs.GameVersion} with account ${launchArgs.GameAccount} and portal ${launchArgs.Portal}`);
         this.hasRecentlyLaunched = true;
         timer(5000).pipe(takeUntil(this.destroyed)).subscribe(() => {
             this.logger.log('Account | Re-enabling launch button');

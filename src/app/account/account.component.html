@@ -3,6 +3,13 @@
         <form #gameAccountSelectionForm="ngForm" (ngSubmit)="launch()">
             <div class="form-row">
                 <div class="form-field">
+                    <select name="gameVersion" required [(ngModel)]="selectedGameVersion">
+                        <option *ngFor="let gameVersion of gameVersions" [ngValue]="gameVersion">{{ gameVersion.display_name }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-field">
                     <select name="gameAccount" required [(ngModel)]="selectedGameAccount" [disabled]="noGameAccounts">
                         <option *ngFor="let gameAccount of gameAccounts" [ngValue]="gameAccount">{{ gameAccount.display_name }}</option>
                     </select>

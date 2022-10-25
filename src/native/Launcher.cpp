@@ -10,7 +10,7 @@ void LaunchGame(v8::FunctionCallbackInfo<v8::Value> const& args)
     v8::Isolate* isolate = args.GetIsolate();
     v8::HandleScope scope(isolate);
 
-    if (args.Length() < 4)
+    if (args.Length() < 5)
     {
         isolate->ThrowException(v8::Exception::TypeError(v8::String::NewFromUtf8(isolate, "Wrong number of arguments, expected 5", v8::NewStringType::kNormal)
             .ToLocalChecked()));
@@ -20,7 +20,7 @@ void LaunchGame(v8::FunctionCallbackInfo<v8::Value> const& args)
     if (!args[0]->IsString() || !args[1]->IsString() || !args[2]->IsString() || !args[3]->IsString())
     {
         isolate->ThrowException(v8::Exception::TypeError(v8::String::NewFromUtf8(isolate,
-                "Wrong arguments types, expected (gameInstallDir: string, portal: string, loginTicket: string, gameAccount: string)", v8::NewStringType::kNormal)
+                "Wrong arguments types, expected (gameInstallDir: string, portal: string, loginTicket: string, gameAccount: string, version: string)", v8::NewStringType::kNormal)
             .ToLocalChecked()));
         return;
     }
@@ -29,10 +29,11 @@ void LaunchGame(v8::FunctionCallbackInfo<v8::Value> const& args)
     v8::String::Utf8Value portal(isolate, args[1]->ToString(isolate->GetCurrentContext()).ToLocalChecked());
     v8::String::Utf8Value loginTicket(isolate, args[2]->ToString(isolate->GetCurrentContext()).ToLocalChecked());
     v8::String::Utf8Value gameAccount(isolate, args[3]->ToString(isolate->GetCurrentContext()).ToLocalChecked());
+    v8::String::Utf8Value version(isolate, args[4]->ToString(isolate->GetCurrentContext()).ToLocalChecked());
 
     bool success = false;
     if (StoreLoginTicket(*portal, *loginTicket, *gameAccount))
-        if (LaunchGameWithLogin(*gameInstallDir))
+        if (LaunchGameWithLogin(*gameInstallDir, *version))
             success = true;
 
     args.GetReturnValue().Set(v8::Boolean::New(isolate, success));

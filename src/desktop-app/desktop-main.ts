@@ -43,7 +43,8 @@ function getDefaultConfiguration(): Configuration {
         WowInstallDir: 'C:\\Program Files (x86)\\World of Warcraft',
         LoginServerUrl: 'https://localhost:8081/bnetserver',
         RememberLogin: false,
-        LastGameAccount: ''
+        LastGameAccount: '',
+        LastGameVersion: 'Retail'
     };
 }
 
@@ -249,7 +250,8 @@ app.on('ready', () => {
             configuration.WowInstallDir,
             args.Portal,
             args.LoginTicket,
-            args.GameAccount);
+            args.GameAccount,
+            args.GameVersion);
     });
 });
 

@@ -90,7 +90,7 @@ bool StoreLoginTicket(char const* portal, char const* loginTicket, char const* g
     return true;
 }
 
-bool LaunchGameWithLogin(char const* gameInstallDir)
+bool LaunchGameWithLogin(char const* gameInstallDir, char const* /*version*/)
 {
     char commandLine[32768] = {};
     strcat(commandLine, "open \"");
