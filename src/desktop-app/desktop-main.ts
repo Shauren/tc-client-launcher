@@ -78,8 +78,8 @@ function createWindow() {
         }
     });
 
-    ipcMain.once('get-argv', (event: Electron.Event) => {
-        event.returnValue = {
+    ipcMain.handleOnce('get-argv', (event: Electron.IpcMainInvokeEvent): { [p: string]: any } => {
+        return {
             ...commandLine,
             program_platform: process.platform,
             program_id: app.getName(),

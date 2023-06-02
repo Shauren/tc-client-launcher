@@ -58,19 +58,30 @@ void EncryptJsString(v8::FunctionCallbackInfo<v8::Value> const& args)
     }
 
     v8::String::Utf8Value inputString(isolate, args[0]->ToString(isolate->GetCurrentContext()).ToLocalChecked());
-    std::unique_ptr<std::vector<uint8_t>> encryptedString = std::make_unique<std::vector<uint8_t>>();
+    std::vector<uint8_t> encryptedString;
 
-    if (!EncryptString(*inputString, encryptedString.get()))
+    if (!EncryptString(*inputString, &encryptedString))
     {
         isolate->ThrowException(v8::Exception::Error(v8::String::NewFromUtf8(isolate, "Encryption failed", v8::NewStringType::kNormal).ToLocalChecked()));
         return;
     }
 
-    char* data = reinterpret_cast<char*>(encryptedString->data());
-    size_t length = encryptedString->size();
-    node::Buffer::FreeCallback deleter = [](char*, void* hint) { delete reinterpret_cast<std::vector<uint8_t>*>(hint); };
+    char* data = reinterpret_cast<char*>(encryptedString.data());
+    size_t length = encryptedString.size();
+
+    auto allocHint = std::make_unique<std::pair<v8::ArrayBuffer::Allocator*, size_t>>(isolate->GetArrayBufferAllocator(), length);
+
+    node::Buffer::FreeCallback deleter = [](char* ptr, void* hint)
+    {
+        auto hintData = static_cast<decltype(allocHint)::element_type*>(hint);
+        hintData->first->Free(ptr, hintData->second);
+    };
     v8::Local<v8::Object> returnBuffer;
-    if (node::Buffer::New(isolate, data, length, deleter, encryptedString.release()).ToLocal(&returnBuffer))
+
+    void* sandboxedData = isolate->GetArrayBufferAllocator()->AllocateUninitialized(length);
+    memcpy(sandboxedData, data, length);
+
+    if (node::Buffer::New(isolate, static_cast<char*>(sandboxedData), length, deleter, allocHint.release()).ToLocal(&returnBuffer))
         args.GetReturnValue().Set(returnBuffer);
     else
         isolate->ThrowException(v8::Exception::Error(v8::String::NewFromUtf8(isolate, "Output buffer creation failed", v8::NewStringType::kNormal).ToLocalChecked()));
