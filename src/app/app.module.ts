@@ -40,7 +40,7 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
         HttpClientModule,
         BrowserModule,
         BrowserAnimationsModule,
-        RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })
+        RouterModule.forRoot(routes, {})
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: BnetserverUrlHttpInterceptor, multi: true },
