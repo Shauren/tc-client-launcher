@@ -11,7 +11,7 @@ https://github.com/typescript-eslint/tslint-to-eslint-config/blob/master/docs/FA
 
 Happy linting! 💖
 */
-module.exports = {
+{
     "env": {
         "browser": true,
         "es6": true,
@@ -25,8 +25,7 @@ module.exports = {
     "plugins": [
         "eslint-plugin-import",
         "@angular-eslint/eslint-plugin",
-        "@typescript-eslint",
-        "@typescript-eslint/tslint"
+        "@typescript-eslint"
     ],
     "root": true,
     "rules": {
@@ -48,8 +47,12 @@ module.exports = {
                 "style": "camelCase"
             }
         ],
+        "@angular-eslint/no-host-metadata-property": "error",
         "@angular-eslint/no-input-rename": "error",
+        "@angular-eslint/no-inputs-metadata-property": "error",
         "@angular-eslint/no-output-rename": "error",
+        "@angular-eslint/no-outputs-metadata-property": "error",
+        "@angular-eslint/use-lifecycle-interface": "error",
         "@angular-eslint/use-pipe-transform-interface": "error",
         "@typescript-eslint/consistent-type-definitions": "error",
         "@typescript-eslint/dot-notation": "off",
@@ -194,30 +197,6 @@ module.exports = {
                 ]
             }
         ],
-        "valid-typeof": "error",
-        "@typescript-eslint/tslint/config": [
-            "error",
-            {
-                "rules": {
-                    "import-spacing": true,
-                    "invoke-injectable": true,
-                    "no-access-missing-member": true,
-                    "templates-use-public": true,
-                    "use-host-property-decorator": true,
-                    "use-input-property-decorator": true,
-                    "use-life-cycle-interface": true,
-                    "use-output-property-decorator": true,
-                    "import-destructuring-spacing": false,
-                    "whitespace": [
-                        true,
-                        "check-branch",
-                        "check-decl",
-                        "check-operator",
-                        "check-separator",
-                        "check-type"
-                    ]
-                }
-            }
-        ]
+        "valid-typeof": "error"
     }
-};
+}

@@ -33,11 +33,11 @@ export class LoaderComponent implements OnInit {
         if (this.loginTicket.shouldAttemptRememberedLogin()) {
             return this.loginTicket.restoreSavedTicket().pipe(
                 mergeMap(() => {
-                    this.logger.log(`Loader | Found remembered login`);
+                    this.logger.log('Loader | Found remembered login');
                     return this.loginTicket.refresh();
                 }),
                 catchError(() => {
-                    this.logger.error(`Loader | Error checking remembered login`);
+                    this.logger.error('Loader | Error checking remembered login');
                     return of({ is_expired: true });
                 }),
                 mergeMap(loginTicketStatus => {
@@ -46,7 +46,7 @@ export class LoaderComponent implements OnInit {
                 }));
         }
 
-        this.logger.log(`Loader | Remembered login not found`);
+        this.logger.log('Loader | Remembered login not found');
         return of('/login');
     }
 }

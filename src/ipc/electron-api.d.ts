@@ -4,7 +4,7 @@ import { ILogEvent } from './log-event';
 import { LaunchArgs } from './launch-args';
 
 export interface ElectronApi {
-    getArgv(): { [key: string]: any; };
+    getArgv(): { [key: string]: any };
     getConfiguration(): Configuration;
     setConfiguration<Key extends keyof Configuration>(change: [Key, Configuration[Key]]): Promise<Configuration>;
     encrypt(data: string): Promise<CryptoResult>;
@@ -12,7 +12,7 @@ export interface ElectronApi {
     log(event: ILogEvent): void;
     login(): void;
     launchGame(args: LaunchArgs): void;
-    selectDirectory(): Promise<{ filePaths: string[], canceled: boolean }>;
+    selectDirectory(): Promise<{ filePaths: string[]; canceled: boolean }>;
     onOpenSettingsRequest(callback: () => void): void;
     onLogoutRequest(callback: () => void): void;
 }
