@@ -1,3 +1,4 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AccountComponent } from './account/account.component';
@@ -10,8 +11,21 @@ import { PortalResolver } from './portal-resolver';
 
 export const routes: Routes = [
     { path: '', pathMatch: 'full', component: LoaderComponent },
-    { path: 'login', component: LoginComponent, resolve: { form: LoginFormResolver } },
-    { path: 'account', component: AccountComponent, resolve: { gameAccounts: GameAccountResolver, portal: PortalResolver } },
+    {
+        path: 'login',
+        component: LoginComponent,
+        resolve: {
+            form: () => inject(LoginFormResolver).resolve()
+        }
+    },
+    {
+        path: 'account',
+        component: AccountComponent,
+        resolve: {
+            gameAccounts: () => inject(GameAccountResolver).resolve(),
+            portal: () => inject(PortalResolver).resolve()
+        }
+    },
     { path: 'initialization-error', component: ErrorComponent, data: { code: 'TCL001' } },
     { path: 'portal-error', component: ErrorComponent, data: { code: 'TCL002' } },
     { path: '**', component: ErrorComponent, data: { code: 'TCL404' } }

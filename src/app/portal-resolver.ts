@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
+import { Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { Logger } from '../desktop-app/logger';
 
 @Injectable()
-export class PortalResolver implements Resolve<string> {
+export class PortalResolver  {
 
     constructor(
         private http: HttpClient,
@@ -15,7 +15,7 @@ export class PortalResolver implements Resolve<string> {
         private logger: Logger) {
     }
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<string> {
+    resolve(): Observable<string> {
         this.logger.log('Portal | Retrieving portal address');
         return this.http.get('portal/', { responseType: 'text' }).pipe(
             catchError(error => {

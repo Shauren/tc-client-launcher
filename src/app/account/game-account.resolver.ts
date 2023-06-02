@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -8,14 +7,14 @@ import { AccountService } from './account.service';
 import { GameAccountList } from './game-account-info';
 
 @Injectable()
-export class GameAccountResolver implements Resolve<GameAccountList> {
+export class GameAccountResolver  {
 
     constructor(
         private accountService: AccountService,
         private logger: Logger) {
     }
 
-    resolve(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<GameAccountList> {
+    resolve(): Observable<GameAccountList> {
         this.logger.log('Account | Retrieving game account list');
         return this.accountService.getGameAccounts().pipe(catchError(error => {
             this.logger.error('Account | Failed to retrieve game account list!', error);
