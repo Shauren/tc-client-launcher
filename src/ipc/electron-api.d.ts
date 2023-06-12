@@ -4,8 +4,8 @@ import { ILogEvent } from './log-event';
 import { LaunchArgs } from './launch-args';
 
 export interface ElectronApi {
-    getArgv(): { [key: string]: any };
-    getConfiguration(): Configuration;
+    getArgv(): Promise<{ [key: string]: any }>;
+    getConfiguration(): Promise<Configuration>;
     setConfiguration<Key extends keyof Configuration>(change: [Key, Configuration[Key]]): Promise<Configuration>;
     encrypt(data: string): Promise<CryptoResult>;
     decrypt(data: string): Promise<CryptoResult>;

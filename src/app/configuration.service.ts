@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 
 import { Configuration } from '../ipc/configuration';
 
+let initialSettings: Configuration;
+
 @Injectable()
 export class ConfigurationService {
 
-    private settingsCache: Configuration;
+    private settingsCache: Configuration = initialSettings;
 
     constructor() {
-        this.settingsCache = window.electronAPI.getConfiguration();
     }
 
     get WowInstallDir(): string {
@@ -55,4 +56,11 @@ export class ConfigurationService {
         window.electronAPI.setConfiguration(['LastGameVersion', lastGameAccount])
             .then(newConfiguration => this.settingsCache = newConfiguration);
     }
+}
+
+export function configurationInitializer() {
+    return function () {
+        return window.electronAPI.getConfiguration()
+            .then(value => initialSettings = value);
+    };
 }

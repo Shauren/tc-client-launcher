@@ -52,7 +52,7 @@ function loadConfig() {
     configuration = Object.assign(getDefaultConfiguration(), electronSettings.getSync());
     electronSettings.setSync(<any>configuration);
 
-    ipcMain.on('get-configuration', (event) => event.returnValue = configuration);
+    ipcMain.handle('get-configuration', () => configuration);
     ipcMain.handle('configuration', <Key extends keyof Configuration>(event, args: [Key, Configuration[Key]]) => {
         if (args != undefined) {
             if (args[1] == undefined) {
@@ -78,7 +78,7 @@ function createWindow() {
         }
     });
 
-    ipcMain.handleOnce('get-argv', (event: Electron.IpcMainInvokeEvent): { [p: string]: any } => {
+    ipcMain.handleOnce('get-argv', (): { [p: string]: any } => {
         return {
             ...commandLine,
             program_platform: process.platform,
@@ -241,8 +241,7 @@ app.on('ready', () => {
 
     setupCrypto();
 
-    ipcMain.handle('select-directory',
-        (event: Electron.IpcMainEvent) => dialog.showOpenDialog(applicationWindow, {properties: ['openDirectory']}));
+    ipcMain.handle('select-directory', () => dialog.showOpenDialog(applicationWindow, {properties: ['openDirectory']}));
 
     ipcMain.on('launch-game', (event: Electron.IpcMainEvent, args: LaunchArgs) => {
         nativeLauncher.launchGame(

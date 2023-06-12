@@ -6,37 +6,37 @@ import { ILogEvent } from '../ipc/log-event';
 import { LaunchArgs } from '../ipc/launch-args';
 
 const api: ElectronApi = {
-    getArgv(): { [p: string]: any } {
-        return ipcRenderer.sendSync('get-argv');
+    getArgv: function(): Promise<{ [p: string]: any }> {
+        return ipcRenderer.invoke('get-argv');
     },
-    getConfiguration(): Configuration {
-        return ipcRenderer.sendSync('get-configuration');
+    getConfiguration: function(): Promise<Configuration> {
+        return ipcRenderer.invoke('get-configuration');
     },
-    setConfiguration<Key extends keyof Configuration>(change: [Key, Configuration[Key]]): Promise<Configuration> {
+    setConfiguration: function<Key extends keyof Configuration>(change: [Key, Configuration[Key]]): Promise<Configuration> {
         return ipcRenderer.invoke('configuration', change);
     },
-    encrypt(data: string): Promise<CryptoResult> {
+    encrypt: function(data: string): Promise<CryptoResult> {
         return ipcRenderer.invoke('encrypt', data);
     },
-    decrypt(data: string): Promise<CryptoResult> {
+    decrypt: function(data: string): Promise<CryptoResult> {
         return ipcRenderer.invoke('decrypt', data);
     },
-    log(event: ILogEvent): void {
+    log: function(event: ILogEvent): void {
         ipcRenderer.send('logger', event);
     },
-    login() {
+    login: function() {
         ipcRenderer.send('login');
     },
-    launchGame(args: LaunchArgs) {
+    launchGame: function(args: LaunchArgs) {
         ipcRenderer.send('launch-game', args);
     },
-    selectDirectory(): Promise<{ filePaths: string[]; canceled: boolean }> {
+    selectDirectory: function(): Promise<{ filePaths: string[]; canceled: boolean }> {
         return ipcRenderer.invoke('select-directory');
     },
-    onOpenSettingsRequest(callback: () => void) {
+    onOpenSettingsRequest: function(callback: () => void) {
         ipcRenderer.on('open-settings', callback);
     },
-    onLogoutRequest(callback: () => void) {
+    onLogoutRequest: function(callback: () => void) {
         ipcRenderer.on('logout', callback);
     }
 };

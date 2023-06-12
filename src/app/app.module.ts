@@ -1,5 +1,5 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -9,10 +9,10 @@ import { Logger } from '../desktop-app/logger';
 import { AccountComponent } from './account/account.component';
 import { AccountService } from './account/account.service';
 import { GameAccountResolver } from './account/game-account.resolver';
-import { Argv, argvFactory } from './argv';
+import { Argv, argvFactory, argvInitializer } from './argv';
 import { AuthHttpInterceptor } from './auth-http-interceptor';
 import { BnetserverUrlHttpInterceptor } from './bnetserver-url-http-interceptor';
-import { ConfigurationService } from './configuration.service';
+import { configurationInitializer, ConfigurationService } from './configuration.service';
 import { ErrorComponent } from './error/error.component';
 import { LoaderComponent } from './loader/loader.component';
 import { LoggingHttpInterceptor } from './logging-http-interceptor';
@@ -43,6 +43,8 @@ import { SettingsDialogComponent } from './settings-dialog/settings-dialog.compo
         RouterModule.forRoot(routes, {})
     ],
     providers: [
+        { provide: APP_INITIALIZER, useFactory: configurationInitializer, multi: true },
+        { provide: APP_INITIALIZER, useFactory: argvInitializer, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: BnetserverUrlHttpInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: LoggingHttpInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
