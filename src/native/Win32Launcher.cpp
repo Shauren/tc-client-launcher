@@ -86,7 +86,7 @@ bool LaunchGameWithLogin(char const* gameInstallDir, char const* version)
         strcat(commandLine, " --version ");
         strcat(commandLine, version);
     }
-    strcat(commandLine, " -launcherlogin -Config Config2.wtf");
+    strcat(commandLine, " -launcherlogin -config Config2.wtf");
 
     STARTUPINFOA startupInfo{sizeof(STARTUPINFOA)};
     PROCESS_INFORMATION processInfo;
