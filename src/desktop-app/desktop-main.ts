@@ -286,6 +286,7 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
         event.preventDefault();
         callback(true);
     } else {
+        logger.error(`Crypto | Invalid certificate: ${error}. Issuer: ${certificate.issuerName}, Fingerprint: ${certificate.fingerprint}`);
         callback(false);
     }
 });
