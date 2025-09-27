@@ -1,5 +1,8 @@
 # TcLauncher
 
+> [!IMPORTANT]  
+> This tool requires the [Arctium Launcher](https://arctium.io/wow/) to work, If the current Arctium Launcher version doesn't have support to your current operating system, <ins>**this tool will not work**</ins>.
+
 ## Build
 
 Run `npm run build-all-dev` to build the project. The build artifacts will be stored in the `dist/` directory.
