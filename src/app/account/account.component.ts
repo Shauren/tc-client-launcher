@@ -24,7 +24,10 @@ const ExpansionNames = [
     'Legion',
     'Battle for Azeroth',
     'Shadowlands',
-    'Dragonflight'
+    'Dragonflight',
+    'The War Within',
+    'Midnight',
+    'The Last Titan'
 ];
 
 const NO_GAME_ACCOUNT: GameAccountInfo = {
